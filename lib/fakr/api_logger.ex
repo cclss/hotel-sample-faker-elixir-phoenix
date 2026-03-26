@@ -60,6 +60,19 @@ defmodule Fakr.ApiLogger do
   Build a log entry from conn after response.
   """
   def build_entry(conn, params, duration_us) do
+    resp_body =
+      case conn.resp_body do
+        body when is_binary(body) ->
+          # Pretty-print JSON, truncate if too large
+          case Jason.decode(body) do
+            {:ok, decoded} -> Jason.encode!(decoded, pretty: true) |> String.slice(0, 4096)
+            _ -> String.slice(body, 0, 4096)
+          end
+
+        _ ->
+          nil
+      end
+
     %{
       id: System.unique_integer([:positive]),
       timestamp: DateTime.utc_now() |> DateTime.to_iso8601(),
@@ -70,7 +83,18 @@ defmodule Fakr.ApiLogger do
       duration_ms: Float.round(duration_us / 1000, 1),
       resource: params["resource_slug"],
       client: params["_client"] || nil,
-      response_body: nil
+      request_headers: filter_headers(conn.req_headers),
+      response_headers: filter_headers(conn.resp_headers),
+      response_body: resp_body
     }
+  end
+
+  defp filter_headers(headers) do
+    # Keep useful headers, drop noisy internal ones
+    skip = ~w(x-request-id x-forwarded-for x-forwarded-proto x-forwarded-port)
+
+    headers
+    |> Enum.reject(fn {k, _} -> k in skip end)
+    |> Enum.take(20)
   end
 end

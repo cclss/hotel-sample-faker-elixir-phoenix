@@ -336,17 +336,17 @@ defmodule FakrWeb.CollectionShowLive do
                   Live Activity
                 </h3>
                 <div class="flex items-center gap-2">
-                  <div class="flex items-center gap-1.5">
+                  <form phx-change="update_activity_filter" class="flex items-center gap-1.5">
                     <label class="text-xs text-gray-400">Client filter:</label>
                     <input
                       type="text"
                       value={@activity_client_filter}
-                      phx-change="update_activity_filter"
                       name="client_filter"
                       placeholder="my-app"
+                      phx-debounce="300"
                       class="input input-bordered input-xs w-28"
                     />
-                  </div>
+                  </form>
                   <span class="flex items-center gap-1 text-xs text-green-500">
                     <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
                     live
@@ -385,6 +385,92 @@ defmodule FakrWeb.CollectionShowLive do
                   <span class="text-[10px] text-gray-300">{format_time(entry.timestamp)}</span>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <%!-- ═══ Request Detail Modal ═══ --%>
+      <div
+        :if={@activity_detail}
+        class="fixed inset-0 z-50 flex items-center justify-center"
+        phx-window-keydown="close_activity_detail"
+        phx-key="Escape"
+      >
+        <div class="fixed inset-0 bg-black/50" phx-click="close_activity_detail"></div>
+        <div class="relative bg-white rounded-xl shadow-xl w-full max-w-2xl mx-4 z-10 max-h-[85vh] overflow-y-auto">
+          <%!-- Header --%>
+          <div class="sticky top-0 bg-white border-b border-smoke px-6 py-4 flex items-center justify-between rounded-t-xl">
+            <div class="flex items-center gap-3">
+              <span class={[
+                "px-2 py-1 text-sm font-bold rounded",
+                cond do
+                  @activity_detail.status < 300 -> "bg-green-100 text-green-700"
+                  @activity_detail.status < 400 -> "bg-yellow-100 text-yellow-700"
+                  true -> "bg-red-100 text-red-700"
+                end
+              ]}>
+                {@activity_detail.status}
+              </span>
+              <span class="font-mono text-sm text-peppercorn font-semibold">{@activity_detail.method}</span>
+              <span class="text-xs text-gray-400">{@activity_detail.duration_ms}ms</span>
+            </div>
+            <button phx-click="close_activity_detail" class="text-gray-400 hover:text-gray-600">
+              <.icon name="hero-x-mark" class="w-5 h-5" />
+            </button>
+          </div>
+
+          <div class="px-6 py-4 space-y-5">
+            <%!-- URL --%>
+            <div>
+              <h4 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">URL</h4>
+              <code class="text-sm font-mono text-peppercorn break-all">
+                {@activity_detail.path}<%= if @activity_detail.query_string != "" do %>?{@activity_detail.query_string}<% end %>
+              </code>
+            </div>
+
+            <%!-- Timestamp + Client --%>
+            <div class="flex items-center gap-4 text-sm text-gray-500">
+              <span>{@activity_detail.timestamp}</span>
+              <span :if={@activity_detail.client} class="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded">
+                client: {@activity_detail.client}
+              </span>
+            </div>
+
+            <%!-- Request Headers --%>
+            <div>
+              <h4 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Request Headers</h4>
+              <div class="bg-smoke/50 rounded-lg p-3 overflow-x-auto">
+                <table class="text-xs font-mono w-full">
+                  <tbody>
+                    <tr :for={{name, value} <- @activity_detail.request_headers || []} class="border-b border-smoke/50 last:border-0">
+                      <td class="py-1 pr-3 text-gray-500 whitespace-nowrap align-top">{name}</td>
+                      <td class="py-1 text-peppercorn break-all">{value}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <%!-- Response Headers --%>
+            <div>
+              <h4 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Response Headers</h4>
+              <div class="bg-smoke/50 rounded-lg p-3 overflow-x-auto">
+                <table class="text-xs font-mono w-full">
+                  <tbody>
+                    <tr :for={{name, value} <- @activity_detail.response_headers || []} class="border-b border-smoke/50 last:border-0">
+                      <td class="py-1 pr-3 text-gray-500 whitespace-nowrap align-top">{name}</td>
+                      <td class="py-1 text-peppercorn break-all">{value}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <%!-- Response Body --%>
+            <div>
+              <h4 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Response Body</h4>
+              <pre class="bg-peppercorn text-green-400 p-4 rounded-lg overflow-x-auto text-xs font-mono whitespace-pre-wrap max-h-72 overflow-y-auto"><code>{@activity_detail.response_body || "(empty)"}</code></pre>
             </div>
           </div>
         </div>
@@ -433,6 +519,7 @@ defmodule FakrWeb.CollectionShowLive do
          base_url: FakrWeb.Endpoint.url(),
          activity_log: existing_log,
          activity_client_filter: "",
+         activity_detail: nil,
          page_title: "#{collection.name} — @#{username}"
        )}
     end
@@ -471,9 +558,14 @@ defmodule FakrWeb.CollectionShowLive do
     {:noreply, assign(socket, activity_client_filter: filter, activity_log: log)}
   end
 
-  def handle_event("toggle_activity_detail", %{"id" => _id}, socket) do
-    # Future: expand to show response body
-    {:noreply, socket}
+  def handle_event("toggle_activity_detail", %{"id" => id_str}, socket) do
+    id = String.to_integer(id_str)
+    entry = Enum.find(socket.assigns.activity_log, &(&1.id == id))
+    {:noreply, assign(socket, activity_detail: entry)}
+  end
+
+  def handle_event("close_activity_detail", _params, socket) do
+    {:noreply, assign(socket, activity_detail: nil)}
   end
 
   @impl true
