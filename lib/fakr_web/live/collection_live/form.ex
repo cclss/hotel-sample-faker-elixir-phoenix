@@ -11,16 +11,16 @@ defmodule FakrWeb.CollectionLive.Form do
       <div class="max-w-xl mx-auto">
         <.link
           navigate={~p"/dashboard"}
-          class="text-sm text-cypress hover:underline mb-4 inline-block"
+          class="text-sm text-blue hover:underline mb-4 inline-block"
         >
           &larr; Back to Dashboard
         </.link>
 
-        <h1 class="text-2xl font-bold text-peppercorn mb-6">
+        <h1 class="text-2xl font-bold text-navy mb-6">
           {if @live_action == :new, do: "New Collection", else: "Edit Collection"}
         </h1>
 
-        <div class="bg-white rounded-xl border border-smoke p-6">
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
           <.form for={@form} id="collection-form" phx-change="validate" phx-submit="save">
             <div class="space-y-4">
               <.input
@@ -33,7 +33,7 @@ defmodule FakrWeb.CollectionLive.Form do
               />
 
               <div :if={@slug_preview} class="text-sm text-gray-500">
-                Slug: <code class="bg-smoke px-2 py-1 rounded text-peppercorn">{@slug_preview}</code>
+                Slug: <code class="bg-gray-100 px-2 py-1 rounded text-navy">{@slug_preview}</code>
               </div>
 
               <.input

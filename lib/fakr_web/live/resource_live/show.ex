@@ -11,13 +11,13 @@ defmodule FakrWeb.ResourceLive.Show do
     ~H"""
     <Layouts.app flash={@flash} current_scope={@current_scope}>
       <div class="max-w-6xl mx-auto">
-        <.link navigate={~p"/collections/#{@collection_id}"} class="text-sm text-cypress hover:underline mb-4 inline-block">
+        <.link navigate={~p"/collections/#{@collection_id}"} class="text-sm text-blue hover:underline mb-4 inline-block">
           &larr; Back to Collection
         </.link>
 
         <div class="flex items-center justify-between mb-6">
           <div>
-            <h1 class="text-2xl font-bold text-peppercorn">{@resource.name}</h1>
+            <h1 class="text-2xl font-bold text-navy">{@resource.name}</h1>
             <p class="text-sm text-gray-400 mt-1">
               {@resource.total_records} records · Rev. {@resource.revision}
               <span :if={@resource.revised_at} class="text-gray-300">({Calendar.strftime(@resource.revised_at, "%Y-%m-%d %H:%M")})</span>
@@ -29,17 +29,17 @@ defmodule FakrWeb.ResourceLive.Show do
         </div>
 
         <%!-- Stale revision warning --%>
-        <div :if={@resource.published && @resource.published_revision != @resource.revision} class="mb-6 flex items-center gap-3 p-4 bg-cavendish/20 border border-cavendish rounded-lg">
-          <.icon name="hero-exclamation-triangle" class="w-5 h-5 text-peppercorn shrink-0" />
+        <div :if={@resource.published && @resource.published_revision != @resource.revision} class="mb-6 flex items-center gap-3 p-4 bg-mint/20 border border-mint rounded-lg">
+          <.icon name="hero-exclamation-triangle" class="w-5 h-5 text-navy shrink-0" />
           <div class="flex-1">
-            <p class="text-sm font-medium text-peppercorn">Field definitions changed since last publish</p>
+            <p class="text-sm font-medium text-navy">Field definitions changed since last publish</p>
             <p class="text-xs text-gray-500">Published: Rev. {if @resource.published_revision, do: @resource.published_revision, else: "—"} · Current: Rev. {@resource.revision}</p>
           </div>
           <div class="flex items-center gap-2 shrink-0">
             <button phx-click="revert_to_published" class="px-3 py-1.5 text-xs border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50 transition font-medium" data-confirm={"Revert to Rev. #{@resource.published_revision}?"}>
               Revert to Rev. {@resource.published_revision}
             </button>
-            <.link navigate={~p"/collections/#{@collection_id}"} class="px-3 py-1.5 text-xs bg-cavendish text-peppercorn rounded-lg hover:bg-cavendish/80 transition font-medium">
+            <.link navigate={~p"/collections/#{@collection_id}"} class="px-3 py-1.5 text-xs bg-mint-light text-navy rounded-lg hover:bg-mint-light/80 transition font-medium">
               Go to Regenerate
             </.link>
           </div>
@@ -48,16 +48,16 @@ defmodule FakrWeb.ResourceLive.Show do
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <%!-- Left: Field Definitions (Tree) --%>
           <div>
-            <div class="bg-white rounded-xl border border-smoke p-6">
+            <div class="bg-white rounded-xl border border-gray-200 p-6">
               <div class="flex items-center justify-between mb-4">
-                <h2 class="text-lg font-semibold text-peppercorn">Field Definitions</h2>
+                <h2 class="text-lg font-semibold text-navy">Field Definitions</h2>
               </div>
 
               <%!-- Auto id --%>
-              <div class="flex items-center p-3 bg-cypress/5 border border-cypress/20 rounded-lg mb-3">
-                <span class="font-medium text-peppercorn">id</span>
+              <div class="flex items-center p-3 bg-indigo/5 border border-indigo/20 rounded-lg mb-3">
+                <span class="font-medium text-navy">id</span>
                 <span class="text-sm text-gray-400 ml-2">Auto-generated integer</span>
-                <span class="ml-auto text-xs text-cypress bg-cypress/10 px-2 py-0.5 rounded-full">auto</span>
+                <span class="ml-auto text-xs text-blue bg-indigo/10 px-2 py-0.5 rounded-full">auto</span>
               </div>
 
               <div :if={@fields == []} class="text-center py-6 text-gray-400">
@@ -112,7 +112,7 @@ defmodule FakrWeb.ResourceLive.Show do
 
               <%!-- Action buttons --%>
               <div class="mt-4 flex items-center gap-2">
-                <button phx-click="open_field_modal" phx-value-mode="add" phx-value-prefix="" class="px-3 py-1.5 text-xs bg-cypress text-white rounded-lg hover:bg-cypress/90 transition font-medium">
+                <button phx-click="open_field_modal" phx-value-mode="add" phx-value-prefix="" class="px-3 py-1.5 text-xs bg-indigo text-white rounded-lg hover:bg-indigo/90 transition font-medium">
                   <.icon name="hero-plus" class="w-3 h-3 mr-1" /> Add Field
                 </button>
                 <button phx-click="open_group_modal" class="px-3 py-1.5 text-xs border border-purple-300 text-purple-600 rounded-lg hover:bg-purple-50 transition font-medium">
@@ -124,15 +124,15 @@ defmodule FakrWeb.ResourceLive.Show do
 
           <%!-- Right: Test Panel --%>
           <div>
-            <div class="bg-white rounded-xl border border-smoke p-6">
-              <h2 class="text-lg font-semibold text-peppercorn mb-4">Test Panel</h2>
+            <div class="bg-white rounded-xl border border-gray-200 p-6">
+              <h2 class="text-lg font-semibold text-navy mb-4">Test Panel</h2>
               <div :if={@fields != []} class="space-y-4">
                 <div class="space-y-2">
                   <h3 class="text-sm font-medium text-gray-600">API Endpoints</h3>
                   <.endpoint_row path={"/@#{@username}/#{@collection_slug}/api/#{@resource.slug}"} base_url={@base_url} />
                   <.endpoint_row path={"/@#{@username}/#{@collection_slug}/api/#{@resource.slug}/:id"} base_url={@base_url} />
                 </div>
-                <button phx-click="generate_preview" class="w-full px-4 py-2 bg-cavendish text-peppercorn rounded-lg hover:bg-cavendish/80 transition font-medium text-sm">
+                <button phx-click="generate_preview" class="w-full px-4 py-2 bg-mint-light text-navy rounded-lg hover:bg-mint-light/80 transition font-medium text-sm">
                   Generate Preview
                 </button>
               </div>
@@ -141,7 +141,7 @@ defmodule FakrWeb.ResourceLive.Show do
               </div>
               <div :if={@preview_json} class="mt-4">
                 <h3 class="text-sm font-medium text-gray-600 mb-2">Preview Response</h3>
-                <pre class="bg-peppercorn text-green-400 p-4 rounded-lg overflow-x-auto text-sm font-mono whitespace-pre-wrap max-h-96 overflow-y-auto"><code>{@preview_json}</code></pre>
+                <pre class="bg-code-bg text-mint-light p-4 rounded-lg overflow-x-auto text-sm font-mono whitespace-pre-wrap max-h-96 overflow-y-auto"><code>{@preview_json}</code></pre>
               </div>
             </div>
           </div>
@@ -166,7 +166,7 @@ defmodule FakrWeb.ResourceLive.Show do
       <div :if={@group_modal} class="fixed inset-0 z-50 flex items-center justify-center" phx-window-keydown="close_group_modal" phx-key="Escape">
         <div class="fixed inset-0 bg-black/50" phx-click="close_group_modal"></div>
         <div class="relative bg-white rounded-xl shadow-xl p-6 w-full max-w-sm mx-4 z-10">
-          <h2 class="text-lg font-semibold text-peppercorn mb-4">New Group</h2>
+          <h2 class="text-lg font-semibold text-navy mb-4">New Group</h2>
           <form phx-submit="create_group">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Group Name</label>
@@ -185,7 +185,7 @@ defmodule FakrWeb.ResourceLive.Show do
       <div :if={@group_edit_modal} class="fixed inset-0 z-50 flex items-center justify-center" phx-window-keydown="close_group_edit" phx-key="Escape">
         <div class="fixed inset-0 bg-black/50" phx-click="close_group_edit"></div>
         <div class="relative bg-white rounded-xl shadow-xl p-6 w-full max-w-sm mx-4 z-10">
-          <h2 class="text-lg font-semibold text-peppercorn mb-1">Group: {@ge_group_name}</h2>
+          <h2 class="text-lg font-semibold text-navy mb-1">Group: {@ge_group_name}</h2>
           <p class="text-xs text-gray-400 mb-4">Configure how this group appears in the JSON output.</p>
           <form phx-submit="save_group_settings" phx-change="group_edit_change">
             <input type="hidden" name="group_name" value={@ge_group_name} />
@@ -217,7 +217,7 @@ defmodule FakrWeb.ResourceLive.Show do
                 </div>
               </div>
 
-              <div class="bg-peppercorn rounded-lg p-3 text-xs font-mono text-green-400">
+              <div class="bg-code-bg rounded-lg p-3 text-xs font-mono text-mint-light">
                 <%= if @ge_is_array do %>
                   {"\"#{@ge_group_name}\": [{...}, {...}]"}
                 <% else %>
@@ -238,7 +238,7 @@ defmodule FakrWeb.ResourceLive.Show do
         <div class="fixed inset-0 bg-black/50" phx-click="close_edit_resource"></div>
         <div class="relative bg-white rounded-xl shadow-xl p-6 w-full max-w-md mx-4 z-10">
           <div class="flex items-center justify-between mb-4">
-            <h2 class="text-lg font-semibold text-peppercorn">Edit Resource</h2>
+            <h2 class="text-lg font-semibold text-navy">Edit Resource</h2>
             <button phx-click="close_edit_resource" class="text-gray-400 hover:text-gray-600"><.icon name="hero-x-mark" class="w-5 h-5" /></button>
           </div>
           <.form for={@resource_form} id="edit-resource-form" phx-submit="update_resource">
@@ -269,24 +269,24 @@ defmodule FakrWeb.ResourceLive.Show do
     assigns = assign(assigns, bare_name: bare)
 
     ~H"""
-    <div class="flex items-center gap-2 p-2.5 bg-smoke/40 rounded-lg group hover:bg-smoke/70 transition">
+    <div class="flex items-center gap-2 p-2.5 bg-gray-100/40 rounded-lg group hover:bg-gray-100/70 transition">
       <div class="drag-handle cursor-grab active:cursor-grabbing text-gray-300 hover:text-gray-500 transition shrink-0">
         <.icon name="hero-bars-3" class="w-3.5 h-3.5" />
       </div>
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-1.5">
-          <span class="font-medium text-peppercorn text-sm">{@bare_name}</span>
+          <span class="font-medium text-navy text-sm">{@bare_name}</span>
           <span :if={@field.options["is_array"] == "true"} class="text-[10px] bg-blue-100 text-blue-600 px-1 rounded">array</span>
         </div>
         <span class="text-xs text-gray-400">{@field.faker_category}.{@field.faker_function}</span>
         <div :if={has_visible_options?(@field.options)} class="mt-0.5 flex flex-wrap gap-1">
-          <span :for={{k, v} <- @field.options || %{}} :if={v != "" && v != nil && k not in ["is_array", "array_count"]} class="text-[10px] bg-white px-1.5 py-0.5 rounded text-gray-500 border border-smoke">
+          <span :for={{k, v} <- @field.options || %{}} :if={v != "" && v != nil && k not in ["is_array", "array_count"]} class="text-[10px] bg-white px-1.5 py-0.5 rounded text-gray-500 border border-gray-200">
             {k}: {truncate_option(v)}
           </span>
         </div>
       </div>
       <div class="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition">
-        <button phx-click="open_field_modal" phx-value-mode="edit" phx-value-index={@idx} class="text-gray-400 hover:text-cypress transition">
+        <button phx-click="open_field_modal" phx-value-mode="edit" phx-value-index={@idx} class="text-gray-400 hover:text-blue transition">
           <.icon name="hero-pencil" class="w-3.5 h-3.5" />
         </button>
         <button phx-click="remove_field" phx-value-index={@idx} class="text-gray-400 hover:text-red-500 transition" data-confirm="Remove this field?">
@@ -314,7 +314,7 @@ defmodule FakrWeb.ResourceLive.Show do
       <div class="relative bg-white rounded-xl shadow-xl p-6 w-full max-w-lg mx-4 z-10 max-h-[85vh] overflow-y-auto">
         <div class="flex items-center justify-between mb-4">
           <div>
-            <h2 class="text-lg font-semibold text-peppercorn">
+            <h2 class="text-lg font-semibold text-navy">
               {if @mode == "add", do: "Add Field", else: "Edit Field"}
             </h2>
             <p :if={@prefix != ""} class="text-sm text-purple-500 mt-0.5">
@@ -354,7 +354,7 @@ defmodule FakrWeb.ResourceLive.Show do
               </div>
             </div>
 
-            <div :if={@fm_options_schema != []} class="space-y-2 p-3 bg-smoke/30 rounded-lg">
+            <div :if={@fm_options_schema != []} class="space-y-2 p-3 bg-gray-100/30 rounded-lg">
               <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Options</p>
               <div :for={{key, label, type, default} <- @fm_options_schema}>
                 <label class="text-sm text-gray-600">{label}</label>
@@ -865,11 +865,11 @@ defmodule FakrWeb.ResourceLive.Show do
     assigns = assign(assigns, full_url: assigns.base_url <> assigns.path)
 
     ~H"""
-    <div class="bg-peppercorn rounded-lg px-3 py-2 space-y-1">
+    <div class="bg-code-bg rounded-lg px-3 py-2 space-y-1">
       <div class="flex items-center gap-2">
-        <span class="text-xs font-bold text-cavendish bg-cavendish/20 px-1.5 py-0.5 rounded">GET</span>
-        <code class="text-sm text-green-400 font-mono flex-1 truncate">{@path}</code>
-        <button phx-click={JS.dispatch("phx:copy", detail: %{text: @full_url})} class="text-gray-500 hover:text-cavendish transition shrink-0" title="Copy"><.icon name="hero-clipboard" class="w-4 h-4" /></button>
+        <span class="text-xs font-bold text-mint-light bg-mint/20 px-1.5 py-0.5 rounded">GET</span>
+        <code class="text-sm text-mint-light font-mono flex-1 truncate">{@path}</code>
+        <button phx-click={JS.dispatch("phx:copy", detail: %{text: @full_url})} class="text-gray-500 hover:text-mint-light transition shrink-0" title="Copy"><.icon name="hero-clipboard" class="w-4 h-4" /></button>
       </div>
       <p class="text-[11px] text-gray-500 font-mono truncate">{@full_url}</p>
     </div>

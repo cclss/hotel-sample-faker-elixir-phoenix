@@ -67,7 +67,6 @@ defmodule FakrWeb.Router do
       live "/dashboard", DashboardLive, :index
       live "/collections/new", CollectionLive.Form, :new
       live "/collections/:id", CollectionLive.Show, :show
-      live "/collections/:id/edit", CollectionLive.Form, :edit
       live "/collections/:collection_id/resources/:id", ResourceLive.Show, :show
     end
 
