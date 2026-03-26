@@ -328,6 +328,64 @@ defmodule FakrWeb.CollectionShowLive do
             <div :if={@selected_resource == nil} class="text-center py-16 text-gray-400">
               <p>Select a resource from the sidebar to view its details.</p>
             </div>
+
+            <%!-- Live Activity --%>
+            <div class="mt-8 bg-white rounded-xl border border-smoke p-6">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider">
+                  Live Activity
+                </h3>
+                <div class="flex items-center gap-2">
+                  <div class="flex items-center gap-1.5">
+                    <label class="text-xs text-gray-400">Client filter:</label>
+                    <input
+                      type="text"
+                      value={@activity_client_filter}
+                      phx-change="update_activity_filter"
+                      name="client_filter"
+                      placeholder="my-app"
+                      class="input input-bordered input-xs w-28"
+                    />
+                  </div>
+                  <span class="flex items-center gap-1 text-xs text-green-500">
+                    <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                    live
+                  </span>
+                </div>
+              </div>
+
+              <p class="text-xs text-gray-400 mb-3">
+                Add <code class="bg-smoke px-1 rounded">?_client=my-app</code> to your API calls to filter logs here.
+              </p>
+
+              <div :if={@activity_log == []} class="text-center py-6 text-gray-400 text-sm">
+                No requests yet. API calls will appear here in real-time.
+              </div>
+
+              <div :if={@activity_log != []} class="space-y-1 max-h-80 overflow-y-auto">
+                <div
+                  :for={entry <- @activity_log}
+                  class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-smoke/50 transition text-sm group cursor-pointer"
+                  phx-click="toggle_activity_detail"
+                  phx-value-id={entry.id}
+                >
+                  <span class={[
+                    "w-10 text-xs font-mono font-bold text-center",
+                    cond do
+                      entry.status < 300 -> "text-green-600"
+                      entry.status < 400 -> "text-yellow-600"
+                      true -> "text-red-500"
+                    end
+                  ]}>
+                    {entry.status}
+                  </span>
+                  <span class="text-xs font-mono text-gray-500 w-12 text-right">{entry.duration_ms}ms</span>
+                  <span class="text-xs font-mono text-peppercorn flex-1 truncate">{entry.method} {entry.path}</span>
+                  <span :if={entry.client} class="text-[10px] bg-blue-100 text-blue-600 px-1.5 rounded">{entry.client}</span>
+                  <span class="text-[10px] text-gray-300">{format_time(entry.timestamp)}</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -348,6 +406,14 @@ defmodule FakrWeb.CollectionShowLive do
     else
       resources = published_resources
       selected = List.first(resources)
+      collection_key = "#{username}/#{slug}"
+
+      # Subscribe to live API activity
+      if connected?(socket) do
+        Phoenix.PubSub.subscribe(Fakr.PubSub, "api_log:#{collection_key}")
+      end
+
+      existing_log = Fakr.ApiLogger.get_requests(collection_key)
 
       {:ok,
        socket
@@ -356,6 +422,7 @@ defmodule FakrWeb.CollectionShowLive do
          resources: resources,
          selected_resource: selected,
          username: username,
+         collection_key: collection_key,
          try_mode: "list",
          try_page: 1,
          try_limit: 10,
@@ -364,6 +431,8 @@ defmodule FakrWeb.CollectionShowLive do
          try_status: 200,
          list_record_ids: [],
          base_url: FakrWeb.Endpoint.url(),
+         activity_log: existing_log,
+         activity_client_filter: "",
          page_title: "#{collection.name} — @#{username}"
        )}
     end
@@ -395,6 +464,36 @@ defmodule FakrWeb.CollectionShowLive do
 
   def handle_event("set_try_mode", %{"mode" => mode}, socket) do
     {:noreply, assign(socket, try_mode: mode, try_response: nil, try_status: 200, list_record_ids: [])}
+  end
+
+  def handle_event("update_activity_filter", %{"client_filter" => filter}, socket) do
+    log = Fakr.ApiLogger.get_requests(socket.assigns.collection_key, filter)
+    {:noreply, assign(socket, activity_client_filter: filter, activity_log: log)}
+  end
+
+  def handle_event("toggle_activity_detail", %{"id" => _id}, socket) do
+    # Future: expand to show response body
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_info({:new_request, entry}, socket) do
+    filter = socket.assigns.activity_client_filter
+
+    # Apply client filter
+    show? =
+      case filter do
+        "" -> true
+        nil -> true
+        f -> entry.client == f
+      end
+
+    if show? do
+      updated = Enum.take([entry | socket.assigns.activity_log], 50)
+      {:noreply, assign(socket, activity_log: updated)}
+    else
+      {:noreply, socket}
+    end
   end
 
   def handle_event("update_try_params", params, socket) do
@@ -572,4 +671,13 @@ defmodule FakrWeb.CollectionShowLive do
     </div>
     """
   end
+
+  defp format_time(iso_string) when is_binary(iso_string) do
+    case DateTime.from_iso8601(iso_string) do
+      {:ok, dt, _} -> Calendar.strftime(dt, "%H:%M:%S")
+      _ -> iso_string
+    end
+  end
+
+  defp format_time(_), do: ""
 end

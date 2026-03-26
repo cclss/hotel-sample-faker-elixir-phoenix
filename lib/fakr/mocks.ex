@@ -413,7 +413,7 @@ defmodule Fakr.Mocks do
 
   # --- Generated Records (API) ---
 
-  @reserved_params ~w(page limit sort order search_column search_term)
+  @reserved_params ~w(page limit sort order search_column search_term _client)
 
   def get_generated_records(resource_id, params \\ %{}) do
     page = parse_int(params["page"], 1)
