@@ -1,0 +1,23 @@
+# Ignore .build and deps
+/_build/
+/deps/
+/node_modules/
+
+# Ignore test data
+/test/
+
+# Ignore development configs
+/.elixir_ls/
+/.vscode/
+
+# Git
+.git
+.gitignore
+
+# Docker
+Dockerfile*
+docker-compose*
+
+# Misc
+*.md
+.DS_Store

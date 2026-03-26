@@ -1,0 +1,185 @@
+<Layouts.flash_group flash={@flash} />
+
+<%!-- Hero Section --%>
+<section class="bg-peppercorn text-white">
+  <div class="max-w-5xl mx-auto px-4 py-20 sm:py-28 text-center">
+    <h1 class="text-5xl sm:text-6xl font-bold tracking-tight">
+      <span class="text-cavendish">Faker</span> as a Service
+    </h1>
+    <p class="mt-6 text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed">
+      Design mock APIs visually. Generate realistic fake data instantly.
+      Share production-ready endpoints with your team.
+    </p>
+    <div class="mt-10 flex items-center justify-center gap-4">
+      <a
+        href="/users/register"
+        class="px-8 py-3 bg-cypress text-white text-lg font-semibold rounded-lg hover:bg-cypress/90 transition shadow-lg"
+      >
+        Get Started Free
+      </a>
+      <a
+        href="#how-it-works"
+        class="px-8 py-3 border border-gray-500 text-gray-300 text-lg font-semibold rounded-lg hover:border-gray-300 hover:text-white transition"
+      >
+        Learn More
+      </a>
+    </div>
+    <div class="mt-12 bg-peppercorn/50 border border-gray-700 rounded-xl p-6 max-w-lg mx-auto text-left">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="text-xs font-bold text-cavendish bg-cavendish/20 px-2 py-0.5 rounded">
+          GET
+        </span>
+        <code class="text-sm text-green-400 font-mono">/@johndoe/shop-api/api/products</code>
+      </div>
+      <pre class="text-sm text-green-400 font-mono overflow-x-auto"><code>{"{\n  \"data\": {\n    \"products\": [\n      {\n        \"id\": 1,\n        \"name\": \"Ergonomic Steel Chair\",\n        \"price\": 42.99,\n        \"color\": \"azure\"\n      }\n    ],\n    \"pagination\": {\n      \"page\": 1,\n      \"total\": 50,\n      \"has_next\": true\n    }\n  }\n}"}</code></pre>
+    </div>
+  </div>
+</section>
+
+<%!-- Features Section --%>
+<section class="py-20 bg-white">
+  <div class="max-w-5xl mx-auto px-4">
+    <h2 class="text-3xl font-bold text-center text-peppercorn mb-4">How It Works</h2>
+    <p class="text-center text-gray-500 mb-12 max-w-xl mx-auto">
+      Three simple steps to create production-quality mock APIs
+    </p>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8" id="how-it-works">
+      <%!-- Step 1 --%>
+      <div class="text-center p-6">
+        <div class="w-16 h-16 bg-cavendish/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="w-8 h-8 text-peppercorn"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"
+            />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+            />
+          </svg>
+        </div>
+        <h3 class="text-lg font-semibold text-peppercorn mb-2">1. Define</h3>
+        <p class="text-gray-500 text-sm">
+          Create a collection and define resources with custom fields. Pick from 100+ Faker generators.
+        </p>
+      </div>
+
+      <%!-- Step 2 --%>
+      <div class="text-center p-6">
+        <div class="w-16 h-16 bg-cypress/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="w-8 h-8 text-cypress"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"
+            />
+          </svg>
+        </div>
+        <h3 class="text-lg font-semibold text-peppercorn mb-2">2. Generate</h3>
+        <p class="text-gray-500 text-sm">
+          Hit publish to pre-generate realistic mock records. Preview responses instantly in the web console.
+        </p>
+      </div>
+
+      <%!-- Step 3 --%>
+      <div class="text-center p-6">
+        <div class="w-16 h-16 bg-green-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="w-8 h-8 text-green-600"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"
+            />
+          </svg>
+        </div>
+        <h3 class="text-lg font-semibold text-peppercorn mb-2">3. Share</h3>
+        <p class="text-gray-500 text-sm">
+          Share real API endpoints with your team. Supports pagination, detail views, and query parameters.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%!-- Features Detail --%>
+<section class="py-20 bg-smoke/50">
+  <div class="max-w-5xl mx-auto px-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+      <div>
+        <h2 class="text-3xl font-bold text-peppercorn mb-4">Visual API Designer</h2>
+        <p class="text-gray-500 mb-6">
+          Define your mock resources through an intuitive GUI. Choose from Faker generators like names, emails,
+          addresses, prices, and more. No coding required.
+        </p>
+        <ul class="space-y-3 text-sm text-gray-600">
+          <li class="flex items-center gap-2">
+            <span class="text-cypress font-bold">&#10003;</span> 100+ Faker data generators
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="text-cypress font-bold">&#10003;</span> RESTful list & detail endpoints
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="text-cypress font-bold">&#10003;</span> Built-in pagination support
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="text-cypress font-bold">&#10003;</span> Instant preview & testing
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="text-cypress font-bold">&#10003;</span> Shareable public API docs
+          </li>
+        </ul>
+      </div>
+      <div class="bg-peppercorn rounded-xl p-6 text-sm font-mono">
+        <div class="text-gray-400 mb-2">// Your custom resource schema</div>
+        <pre class="text-green-400"><code>{"{\n  \"name\":  Faker.Person.name,\n  \"email\": Faker.Internet.email,\n  \"city\":  Faker.Address.city,\n  \"price\": Faker.Commerce.price\n}"}</code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%!-- CTA --%>
+<section class="py-16 bg-cypress text-white text-center">
+  <div class="max-w-3xl mx-auto px-4">
+    <h2 class="text-3xl font-bold mb-4">Start building mock APIs in minutes</h2>
+    <p class="text-cypress-dark/0 text-white/80 mb-8">Free to use. No credit card required.</p>
+    <a
+      href="/users/register"
+      class="px-8 py-3 bg-cavendish text-peppercorn text-lg font-semibold rounded-lg hover:bg-cavendish/90 transition shadow-lg"
+    >
+      Create Your First Collection
+    </a>
+  </div>
+</section>
+
+<%!-- Footer --%>
+<footer class="bg-peppercorn text-gray-400 py-8">
+  <div class="max-w-5xl mx-auto px-4 text-center text-sm">
+    <p>
+      Fakr &mdash; Faker as a Service. Built with Elixir, Phoenix LiveView, and the Faker library.
+    </p>
+  </div>
+</footer>

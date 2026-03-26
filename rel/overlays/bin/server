@@ -1,0 +1,10 @@
+#!/bin/sh
+set -eu
+
+cd -P -- "$(dirname -- "$0")"
+
+# Run migrations
+./fakr eval "Fakr.Release.migrate"
+
+# Start the server
+PHX_SERVER=true exec ./fakr start
