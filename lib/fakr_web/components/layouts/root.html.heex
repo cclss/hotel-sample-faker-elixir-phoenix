@@ -22,13 +22,13 @@
       })();
     </script>
   </head>
-  <body class="bg-smoke/30 min-h-screen">
+  <body class="bg-page-bg min-h-screen">
     <%!-- Top Navigation Bar --%>
-    <nav class="bg-peppercorn text-white shadow-lg">
+    <nav class="bg-code-bg text-white shadow-lg">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-14">
           <a href="/" class="flex items-center gap-2">
-            <span class="text-cavendish font-bold text-xl">Fakr</span>
+            <span class="text-mint-light font-bold text-xl">Fakr</span>
             <span class="text-gray-400 text-xs">Faker as a Service</span>
           </a>
           <div class="flex items-center gap-4">
@@ -61,7 +61,7 @@
               </.link>
               <.link
                 href={~p"/users/log-in"}
-                class="text-sm bg-cypress px-3 py-1.5 rounded-lg hover:bg-cypress/90 transition"
+                class="text-sm bg-indigo px-3 py-1.5 rounded-lg hover:bg-violet transition"
               >
                 Log in
               </.link>
@@ -69,8 +69,8 @@
           </div>
         </div>
       </div>
-      <%!-- Cavendish accent stripe --%>
-      <div class="h-1 bg-cavendish"></div>
+      <%!-- Gradient accent stripe --%>
+      <div class="h-1 bg-gradient-to-r from-deep-violet via-indigo to-mint-light"></div>
     </nav>
 
     {@inner_content}

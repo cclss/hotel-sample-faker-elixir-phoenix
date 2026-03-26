@@ -102,15 +102,48 @@
 /* Make LiveView wrapper divs transparent for layout */
 [data-phx-session], [data-phx-teleported-src] { display: contents }
 
-/* Mailchimp-inspired color palette */
+/*
+ * Color palette — gradient spectrum
+ * Source: coolors.co/palette/7400b8-6930c3-5e60ce-5390d9-4ea8de-48bfe3-56cfe1-64dfdf-72efdd-80ffdb
+ *
+ * Semantic mapping:
+ *   deep-violet (#7400B8) — section headings, strong emphasis
+ *   violet (#6930C3)      — primary hover
+ *   indigo (#5E60CE)      — primary buttons, active states
+ *   blue (#5390D9)        — links, interactive elements
+ *   sky (#4EA8DE)         — GET badges, method labels
+ *   cyan (#48BFE3)        — type badges, tags
+ *   lcyan (#56CFE1)       — light accents
+ *   teal (#64DFDF)        — success, published
+ *   mint (#72EFDD)        — subtle accents
+ *   mint-light (#80FFDB)  — code text, highlights
+ *
+ *   code-bg (#1a1a2e)     — code block background
+ *   navy (#2D2D3F)        — primary text
+ *   page-bg (#F8F9FE)     — page background
+ */
 @theme {
-  --color-cavendish: #FFE01B;
-  --color-cavendish-light: #FFF3A0;
-  --color-peppercorn: #241C15;
-  --color-cypress: #007C89;
-  --color-cypress-dark: #005F69;
-  --color-smoke: #EDEDED;
-  --color-smoke-dark: #D9D9D9;
+  --color-deep-violet: #7400B8;
+  --color-violet: #6930C3;
+  --color-indigo: #5E60CE;
+  --color-blue: #5390D9;
+  --color-sky: #4EA8DE;
+  --color-cyan: #48BFE3;
+  --color-lcyan: #56CFE1;
+  --color-teal: #64DFDF;
+  --color-mint: #72EFDD;
+  --color-mint-light: #80FFDB;
+  --color-code-bg: #1a1a2e;
+  --color-navy: #2D2D3F;
+  --color-page-bg: #F8F9FE;
+  /* Legacy aliases (for gradual migration of other pages) */
+  --color-peppercorn: #1a1a2e;
+  --color-cypress: #5E60CE;
+  --color-cypress-dark: #6930C3;
+  --color-cavendish: #80FFDB;
+  --color-cavendish-light: #72EFDD;
+  --color-smoke: #E5E7EB;
+  --color-smoke-dark: #D1D5DB;
 }
 
 /* This file is for your main application CSS */
