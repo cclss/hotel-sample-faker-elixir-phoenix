@@ -32,13 +32,12 @@ if config_env() == :prod do
 
   maybe_ipv6 = if System.get_env("ECTO_IPV6") in ~w(true 1), do: [:inet6], else: []
 
+  maybe_ssl = if System.get_env("DATABASE_SSL") in ~w(true 1), do: [ssl: true], else: []
+
   config :fakr, Fakr.Repo,
-    # ssl: true,
-    url: database_url,
-    pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
-    # For machines with several cores, consider starting multiple pools of `pool_size`
-    # pool_count: 4,
-    socket_options: maybe_ipv6
+    [{:url, database_url},
+     {:pool_size, String.to_integer(System.get_env("POOL_SIZE") || "10")},
+     {:socket_options, maybe_ipv6}] ++ maybe_ssl
 
   # The secret key base is used to sign/encrypt cookies and other secrets.
   # A default value is used in config/dev.exs and config/test.exs but you
@@ -112,10 +111,18 @@ if config_env() == :prod do
       config :swoosh, api_client: false
 
     "mailgun" ->
+      mailgun_api_key =
+        System.get_env("MAILGUN_API_KEY") ||
+          raise "MAIL_ADAPTER is set to 'mailgun' but MAILGUN_API_KEY is missing."
+
+      mailgun_domain =
+        System.get_env("MAILGUN_DOMAIN") ||
+          raise "MAIL_ADAPTER is set to 'mailgun' but MAILGUN_DOMAIN is missing."
+
       config :fakr, Fakr.Mailer,
         adapter: Swoosh.Adapters.Mailgun,
-        api_key: System.get_env("MAILGUN_API_KEY"),
-        domain: System.get_env("MAILGUN_DOMAIN")
+        api_key: mailgun_api_key,
+        domain: mailgun_domain
 
       config :swoosh, local: false
       config :swoosh, api_client: Swoosh.ApiClient.Req

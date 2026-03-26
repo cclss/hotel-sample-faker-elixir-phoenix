@@ -18,9 +18,10 @@ services:
     build: .
     ports:
       - "4000:4000"
+    env_file:
+      - .env
     environment:
       DATABASE_URL: ecto://postgres:postgres@db/fakr_prod
-      SECRET_KEY_BASE: ioRzt0wK3quyLYHXOFXC88X895XkWmiwn/VVguje98XsddQQKaAcr1+GQwopulsz
       PHX_HOST: localhost
       PHX_SCHEME: http
       PHX_URL_PORT: "4000"

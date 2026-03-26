@@ -22,6 +22,9 @@ config :fakr, FakrWeb.Endpoint,
 # Swoosh mail adapter is configured at runtime via MAIL_ADAPTER env var.
 # See config/runtime.exs for details.
 
+# Disable dev routes (LiveDashboard) in production
+config :fakr, dev_routes: false
+
 # Do not print debug messages in production
 config :logger, level: :info
 

@@ -25,10 +25,8 @@ defmodule FakrWeb.Router do
     get "/", PageController, :home
   end
 
-  scope "/", FakrWeb do
-    pipe_through :api
-    get "/health", HealthController, :index
-  end
+  # Health check — no rate limiting, no CORS needed
+  get "/health", FakrWeb.HealthController, :index
 
   # Public API endpoints (JSON + CORS)
   scope "/", FakrWeb do
@@ -39,7 +37,8 @@ defmodule FakrWeb.Router do
     get "/@:username/:collection_slug/api/:resource_slug/:id", ApiController, :show
   end
 
-  # Swoosh mailbox preview (available when using local mail adapter)
+  # Swoosh mailbox preview — Plug.Swoosh.MailboxPreview returns 404
+  # when swoosh local storage is disabled, so this is safe to always mount.
   scope "/dev" do
     pipe_through :browser
     forward "/mailbox", Plug.Swoosh.MailboxPreview
