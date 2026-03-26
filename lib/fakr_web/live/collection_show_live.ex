@@ -8,157 +8,119 @@ defmodule FakrWeb.CollectionShowLive do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} current_scope={@current_scope}>
-      <div class="max-w-6xl mx-auto">
-        <div class="flex gap-8">
-          <%!-- Sidebar --%>
-          <nav class="w-56 shrink-0 hidden lg:block">
-            <div class="sticky top-24">
-              <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Resources</h3>
-              <ul class="space-y-1">
+      <div class="max-w-[1400px] mx-auto">
+        <div class="flex gap-0">
+          <%!-- ═══ Left Sidebar ═══ --%>
+          <nav class="w-48 shrink-0 hidden xl:block">
+            <div class="sticky top-20 pr-4 border-r border-smoke">
+              <%!-- Resources --%>
+              <h4 class="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-2">Resources</h4>
+              <ul class="space-y-0.5 mb-6">
                 <li :for={resource <- @resources}>
-                  <button
-                    phx-click="select_resource"
-                    phx-value-id={resource.id}
-                    class={["w-full text-left px-3 py-2 rounded-lg text-sm transition",
+                  <button phx-click="select_resource" phx-value-id={resource.id}
+                    class={["w-full text-left px-2 py-1.5 rounded text-sm transition",
                       if(@selected_resource && @selected_resource.id == resource.id,
-                        do: "bg-cypress/10 text-cypress font-medium border-l-2 border-cypress",
-                        else: "text-gray-600 hover:bg-smoke")]}
-                  >
+                        do: "bg-cypress/10 text-cypress font-medium",
+                        else: "text-gray-500 hover:text-peppercorn hover:bg-smoke/50")]}>
                     {resource.name}
                   </button>
+                </li>
+              </ul>
+              <%!-- Section anchors --%>
+              <h4 :if={@selected_resource} class="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-2">On this page</h4>
+              <ul :if={@selected_resource} class="space-y-0.5">
+                <li :for={{id, label} <- [{"endpoints", "Endpoints"}, {"properties", "Properties"}, {"parameters", "Parameters"}, {"tryit", "Try It"}, {"activity", "Activity"}]}>
+                  <a href={"##{id}"} class="block px-2 py-1 text-xs text-gray-400 hover:text-cypress transition">{label}</a>
                 </li>
               </ul>
             </div>
           </nav>
 
-          <%!-- Main Content --%>
-          <div class="flex-1 min-w-0">
-            <%!-- Header --%>
-            <div class="mb-6">
-              <h1 class="text-3xl font-bold text-peppercorn">{@collection.name}</h1>
-              <p class="text-gray-500 mt-1">by @{@username}</p>
-              <p :if={@collection.description} class="text-gray-500 mt-2">{@collection.description}</p>
-              <div class="mt-3 flex items-center gap-3">
-                <a href={"/@#{@username}/#{@collection.slug}/openapi.json"} target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs bg-peppercorn text-cavendish rounded-lg hover:bg-peppercorn/80 transition font-medium">
-                  <.icon name="hero-document-text" class="w-3.5 h-3.5" /> OpenAPI Spec
-                </a>
-                <a href={"https://petstore.swagger.io/?url=#{URI.encode(@base_url <> "/@#{@username}/#{@collection.slug}/openapi.json")}"} target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50 transition font-medium">
-                  Swagger UI
-                </a>
+          <%!-- ═══ Center Content ═══ --%>
+          <div class={["flex-1 min-w-0", if(@selected_resource, do: "xl:pr-6", else: "")]}>
+            <%!-- Collection header --%>
+            <div class="px-6 pt-2 pb-6 border-b border-smoke mb-6">
+              <h1 class="text-2xl font-bold text-peppercorn">{@collection.name}</h1>
+              <p class="text-sm text-gray-500 mt-1">by @{@username}</p>
+              <p :if={@collection.description} class="text-sm text-gray-500 mt-1">{@collection.description}</p>
+              <div class="mt-3 flex items-center gap-2">
+                <a href={"/@#{@username}/#{@collection.slug}/openapi.json"} target="_blank" class="text-xs text-gray-400 hover:text-cypress transition">OpenAPI Spec</a>
+                <span class="text-gray-300">·</span>
+                <a href={"https://petstore.swagger.io/?url=#{URI.encode(@base_url <> "/@#{@username}/#{@collection.slug}/openapi.json")}"} target="_blank" class="text-xs text-gray-400 hover:text-cypress transition">Swagger UI</a>
               </div>
             </div>
 
             <%!-- Mobile Resource Selector --%>
-            <div class="lg:hidden mb-4">
-              <select phx-change="select_resource_mobile" class="select select-bordered w-full">
-                <option :for={resource <- @resources} value={resource.id} selected={@selected_resource && @selected_resource.id == resource.id}>
-                  {resource.name}
-                </option>
+            <div class="xl:hidden px-6 mb-4">
+              <select phx-change="select_resource_mobile" class="select select-bordered select-sm w-full">
+                <option :for={resource <- @resources} value={resource.id} selected={@selected_resource && @selected_resource.id == resource.id}>{resource.name}</option>
               </select>
             </div>
 
-            <div :if={@selected_resource}>
-              <%!-- Resource name + Tabs --%>
-              <div class="flex items-center justify-between mb-1">
-                <h2 class="text-xl font-semibold text-peppercorn">{@selected_resource.name}</h2>
+            <div :if={@selected_resource} class="px-6">
+              <%!-- Resource header --%>
+              <div class="mb-8">
+                <h2 class="text-xl font-bold text-peppercorn">{@selected_resource.name}</h2>
+                <p class="text-xs text-gray-400 mt-1">
+                  {Inflex.pluralize(@selected_resource.name) |> String.downcase()} · {@selected_resource.total_records} records
+                </p>
               </div>
 
-              <div class="flex border-b border-smoke mb-6">
-                <button :for={{tab_id, tab_label} <- [{"endpoints", "Endpoints"}, {"tryit", "Try It"}, {"activity", "Activity"}]}
-                  phx-click="set_tab"
-                  phx-value-tab={tab_id}
-                  class={["px-4 py-2.5 text-sm font-medium border-b-2 transition -mb-px",
-                    if(@active_tab == tab_id,
-                      do: "border-cypress text-cypress",
-                      else: "border-transparent text-gray-400 hover:text-gray-600")]}
-                >
-                  {tab_label}
-                  <span :if={tab_id == "activity" && @activity_log != []} class="ml-1.5 w-2 h-2 bg-green-500 rounded-full inline-block animate-pulse"></span>
-                </button>
-              </div>
+              <%!-- ── Endpoints ── --%>
+              <section id="endpoints" class="mb-10">
+                <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3 border-b border-smoke pb-2">Endpoints</h3>
+                <div class="space-y-1">
+                  <.endpoint_row_compact method="GET" path={"/@#{@username}/#{@collection.slug}/api/#{@selected_resource.slug}"} description={"List all #{Inflex.pluralize(@selected_resource.name) |> String.downcase()}"} base_url={@base_url} />
+                  <.endpoint_row_compact method="GET" path={"/@#{@username}/#{@collection.slug}/api/#{@selected_resource.slug}/:id"} description={"Retrieve a single #{Inflex.singularize(@selected_resource.name) |> String.downcase()}"} base_url={@base_url} />
+                </div>
+              </section>
 
-              <%!-- ═══ Tab: Endpoints (2-column) ═══ --%>
-              <div :if={@active_tab == "endpoints"} class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <%!-- Left: Endpoints + Query Params --%>
-                <div class="space-y-6">
-                  <div>
-                    <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Endpoints</h3>
-                    <div class="space-y-3">
-                      <.endpoint_card
-                        path={"/@#{@username}/#{@collection.slug}/api/#{@selected_resource.slug}"}
-                        base_url={@base_url}
-                        description={"List all #{Inflex.pluralize(@selected_resource.name)}"}
-                      />
-                      <.endpoint_card
-                        path={"/@#{@username}/#{@collection.slug}/api/#{@selected_resource.slug}/:id"}
-                        base_url={@base_url}
-                        description={"Get #{Inflex.singularize(@selected_resource.name)} by ID"}
-                      />
+              <%!-- ── Properties ── --%>
+              <section id="properties" class="mb-10">
+                <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3 border-b border-smoke pb-2">Properties</h3>
+                <div class="divide-y divide-smoke">
+                  <%!-- id (auto) --%>
+                  <div class="py-3 flex items-start gap-3">
+                    <div class="flex-1">
+                      <div class="flex items-center gap-2">
+                        <code class="text-sm font-semibold text-peppercorn">id</code>
+                        <span class="text-[10px] bg-smoke text-gray-500 px-1.5 py-0.5 rounded font-mono">integer</span>
+                        <span class="text-[10px] bg-cypress/10 text-cypress px-1.5 py-0.5 rounded">auto</span>
+                      </div>
+                      <p class="text-xs text-gray-400 mt-0.5">Auto-incremented record identifier.</p>
                     </div>
                   </div>
+                  <%!-- Fields --%>
+                  <.property_row :for={field <- visible_fields(@selected_resource.fields)} field={field} />
+                </div>
+              </section>
 
-                  <div>
-                    <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Query Parameters</h3>
-                    <div class="bg-white rounded-lg border border-smoke overflow-hidden">
-                      <table class="w-full text-sm">
-                        <tbody class="text-gray-600">
-                          <tr :for={{param, desc} <- query_params_ref()} class="border-b border-smoke/50 last:border-0">
-                            <td class="py-1.5 px-3 font-mono text-xs text-cypress w-36">{param}</td>
-                            <td class="py-1.5 px-3 text-xs">{desc}</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
+              <%!-- ── Query Parameters ── --%>
+              <section id="parameters" class="mb-10">
+                <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3 border-b border-smoke pb-2">Query Parameters</h3>
+                <div class="divide-y divide-smoke">
+                  <div :for={{param, desc} <- query_params_ref()} class="py-2 flex items-start gap-3">
+                    <code class="text-xs font-mono text-cypress w-32 shrink-0 pt-0.5">{param}</code>
+                    <span class="text-xs text-gray-500">{desc}</span>
                   </div>
                 </div>
+              </section>
 
-                <%!-- Right: Schema + Code Snippets --%>
-                <div class="space-y-6">
-                  <div>
-                    <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Schema</h3>
-                    <div class="bg-white rounded-lg border border-smoke overflow-hidden">
-                      <table class="w-full text-sm">
-                        <tbody>
-                          <tr class="border-b border-smoke/50">
-                            <td class="py-1.5 px-3 font-mono text-peppercorn">id</td>
-                            <td class="py-1.5 px-3 text-gray-400 text-xs">integer</td>
-                          </tr>
-                          <tr :for={field <- @selected_resource.fields} class="border-b border-smoke/50 last:border-0">
-                            <td class="py-1.5 px-3 font-mono text-peppercorn">{field.name}</td>
-                            <td class="py-1.5 px-3 text-gray-400 text-xs">{field.faker_category}.{field.faker_function}</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
+              <%!-- ── Try It ── --%>
+              <section id="tryit" class="mb-10">
+                <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3 border-b border-smoke pb-2">Try It</h3>
 
-                  <div>
-                    <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Code Snippets</h3>
-                    <div class="space-y-2">
-                      <.code_block label="cURL" code={snippet_curl(assigns)} />
-                      <.code_block label="JavaScript" code={snippet_fetch(assigns)} />
-                      <.code_block label="Python" code={snippet_python(assigns)} />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <%!-- ═══ Tab: Try It ═══ --%>
-              <div :if={@active_tab == "tryit"}>
-                <%!-- Mode toggle --%>
-                <div class="flex items-center gap-2 mb-4">
+                <div class="flex items-center gap-2 mb-3">
                   <button :for={{mode, label} <- [{"list", "List"}, {"detail", "Detail"}]}
-                    phx-click="set_try_mode"
-                    phx-value-mode={mode}
-                    class={["px-3 py-1.5 text-xs rounded-lg font-medium transition",
-                      if(@try_mode == mode, do: "bg-cypress text-white", else: "bg-smoke text-gray-600 hover:bg-smoke-dark")]}
-                  >
+                    phx-click="set_try_mode" phx-value-mode={mode}
+                    class={["px-3 py-1 text-xs rounded font-medium transition",
+                      if(@try_mode == mode, do: "bg-cypress text-white", else: "bg-smoke text-gray-500 hover:bg-smoke-dark")]}>
                     {label}
                   </button>
                 </div>
 
                 <%!-- URL bar --%>
-                <div class="bg-peppercorn rounded-lg px-3 py-2 mb-4 space-y-1">
+                <div class="bg-peppercorn rounded-lg px-3 py-2 mb-3">
                   <div class="flex items-center gap-2 font-mono text-sm">
                     <span class="text-xs font-bold text-cavendish bg-cavendish/20 px-1.5 py-0.5 rounded">GET</span>
                     <span class="text-green-400 truncate flex-1">
@@ -166,101 +128,134 @@ defmodule FakrWeb.CollectionShowLive do
                     </span>
                     <button phx-click={JS.dispatch("phx:copy", detail: %{text: try_full_url(assigns)})} class="text-gray-500 hover:text-cavendish transition shrink-0"><.icon name="hero-clipboard" class="w-4 h-4" /></button>
                   </div>
-                  <p class="text-[11px] text-gray-500 font-mono truncate">{try_full_url(assigns)}</p>
                 </div>
 
-                <%!-- Controls --%>
-                <div class="flex items-end gap-3 mb-4 flex-wrap">
+                <div class="flex items-end gap-3 mb-3 flex-wrap">
                   <%= if @try_mode == "list" do %>
                     <div>
-                      <label class="block text-xs text-gray-500 mb-1">Page</label>
+                      <label class="block text-xs text-gray-400 mb-1">Page</label>
                       <input type="number" value={@try_page} phx-change="update_try_params" name="page" min="1" class="input input-bordered input-sm w-20" />
                     </div>
                     <div>
-                      <label class="block text-xs text-gray-500 mb-1">Limit</label>
+                      <label class="block text-xs text-gray-400 mb-1">Limit</label>
                       <input type="number" value={@try_limit} phx-change="update_try_params" name="limit" min="1" max="100" class="input input-bordered input-sm w-20" />
                     </div>
                   <% else %>
                     <div>
-                      <label class="block text-xs text-gray-500 mb-1">Record ID</label>
+                      <label class="block text-xs text-gray-400 mb-1">Record ID</label>
                       <input type="number" value={@try_detail_id} phx-change="update_try_params" name="detail_id" min="1" class="input input-bordered input-sm w-24" />
                     </div>
                   <% end %>
                   <button phx-click="try_api" class="px-4 py-1.5 bg-cypress text-white text-sm rounded-lg hover:bg-cypress/90 transition font-medium">
-                    Send Request
+                    Send
                   </button>
                 </div>
 
-                <%!-- Response --%>
-                <div :if={@try_response}>
-                  <div class="flex items-center justify-between mb-2">
-                    <span class="text-xs font-medium text-gray-500">Response</span>
-                    <span class={["text-xs font-mono", if(@try_status == 200, do: "text-green-600", else: "text-red-500")]}>
-                      {if @try_status == 200, do: "200 OK", else: "404 Not Found"}
-                    </span>
-                  </div>
-                  <pre class="bg-peppercorn text-green-400 p-4 rounded-lg overflow-x-auto text-sm font-mono whitespace-pre-wrap max-h-[500px] overflow-y-auto"><code>{@try_response}</code></pre>
-
-                  <%!-- Quick Detail Links --%>
-                  <div :if={@try_mode == "list" && @list_record_ids != []} class="mt-3 border-t border-smoke pt-3">
-                    <p class="text-xs text-gray-500 mb-2">Quick view detail:</p>
-                    <div class="flex flex-wrap gap-1.5">
-                      <button :for={record_id <- @list_record_ids} phx-click="try_detail_quick" phx-value-id={record_id}
-                        class="px-2.5 py-1 text-xs font-mono bg-smoke hover:bg-cypress hover:text-white text-peppercorn rounded transition cursor-pointer">
-                        /{record_id}
-                      </button>
+                <%!-- Response (shown in center on mobile, mirrored to right panel on desktop) --%>
+                <div :if={@try_response} class="xl:hidden">
+                  <pre class="bg-peppercorn text-green-400 p-4 rounded-lg overflow-x-auto text-xs font-mono whitespace-pre-wrap max-h-96 overflow-y-auto"><code>{@try_response}</code></pre>
+                  <div :if={@try_mode == "list" && @list_record_ids != []} class="mt-2">
+                    <p class="text-xs text-gray-400 mb-1">Quick detail:</p>
+                    <div class="flex flex-wrap gap-1">
+                      <button :for={rid <- @list_record_ids} phx-click="try_detail_quick" phx-value-id={rid}
+                        class="px-2 py-0.5 text-xs font-mono bg-smoke hover:bg-cypress hover:text-white text-peppercorn rounded transition">/{rid}</button>
                     </div>
                   </div>
                 </div>
-              </div>
+              </section>
 
-              <%!-- ═══ Tab: Activity ═══ --%>
-              <div :if={@active_tab == "activity"}>
-                <div class="flex items-center justify-between mb-4">
-                  <p class="text-xs text-gray-400">
-                    Add <code class="bg-smoke px-1 rounded">?_client=my-app</code> to your API calls to filter.
-                  </p>
+              <%!-- ── Activity ── --%>
+              <section id="activity" class="mb-10">
+                <div class="flex items-center justify-between mb-3 border-b border-smoke pb-2">
+                  <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-widest">Activity</h3>
                   <div class="flex items-center gap-2">
                     <form phx-change="update_activity_filter" class="flex items-center gap-1.5">
-                      <label class="text-xs text-gray-400">Client:</label>
-                      <input type="text" value={@activity_client_filter} name="client_filter" placeholder="my-app" phx-debounce="300" class="input input-bordered input-xs w-28" />
+                      <input type="text" value={@activity_client_filter} name="client_filter" placeholder="_client=..." phx-debounce="300" class="input input-bordered input-xs w-24 font-mono" />
                     </form>
-                    <span class="flex items-center gap-1 text-xs text-green-500">
-                      <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> live
+                    <span class="flex items-center gap-1 text-[10px] text-green-500">
+                      <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> live
                     </span>
                   </div>
                 </div>
 
-                <div :if={@activity_log == []} class="text-center py-12 text-gray-400 text-sm">
-                  No requests yet. API calls will appear here in real-time.
+                <div :if={@activity_log == []} class="text-center py-8 text-gray-400 text-xs">
+                  Requests will appear here in real-time. Add <code class="bg-smoke px-1 rounded">?_client=my-app</code> to filter.
                 </div>
 
-                <div :if={@activity_log != []} class="space-y-1">
+                <div :if={@activity_log != []} class="divide-y divide-smoke/50">
                   <div :for={entry <- @activity_log}
-                    class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-smoke/50 transition text-sm cursor-pointer"
-                    phx-click="toggle_activity_detail"
-                    phx-value-id={entry.id}
-                  >
-                    <span class={["w-10 text-xs font-mono font-bold text-center",
+                    class="flex items-center gap-3 py-2 hover:bg-smoke/30 transition cursor-pointer rounded -mx-2 px-2"
+                    phx-click="toggle_activity_detail" phx-value-id={entry.id}>
+                    <span class={["w-8 text-[11px] font-mono font-bold text-center",
                       cond do
                         entry.status < 300 -> "text-green-600"
                         entry.status < 400 -> "text-yellow-600"
                         true -> "text-red-500"
-                      end
-                    ]}>
-                      {entry.status}
-                    </span>
-                    <span class="text-xs font-mono text-gray-500 w-12 text-right">{entry.duration_ms}ms</span>
-                    <span class="text-xs font-mono text-peppercorn flex-1 truncate">{entry.method} {entry.path}</span>
-                    <span :if={entry.client} class="text-[10px] bg-blue-100 text-blue-600 px-1.5 rounded">{entry.client}</span>
+                      end]}>{entry.status}</span>
+                    <span class="text-[11px] font-mono text-gray-400 w-10 text-right">{entry.duration_ms}ms</span>
+                    <span class="text-[11px] font-mono text-peppercorn flex-1 truncate">{entry.path}</span>
+                    <span :if={entry.client} class="text-[9px] bg-blue-100 text-blue-600 px-1 rounded">{entry.client}</span>
                     <span class="text-[10px] text-gray-300">{format_time(entry.timestamp)}</span>
                   </div>
                 </div>
-              </div>
+              </section>
             </div>
 
-            <div :if={@selected_resource == nil} class="text-center py-16 text-gray-400">
-              <p>Select a resource from the sidebar.</p>
+            <div :if={@selected_resource == nil} class="px-6 text-center py-16 text-gray-400">
+              Select a resource from the sidebar.
+            </div>
+          </div>
+
+          <%!-- ═══ Right Code Panel (sticky) ═══ --%>
+          <div :if={@selected_resource} class="w-[380px] shrink-0 hidden xl:block">
+            <div class="sticky top-20">
+              <%!-- Language tabs --%>
+              <div class="flex items-center border-b border-gray-700 bg-peppercorn rounded-t-lg">
+                <button :for={{lang, label} <- [{"curl", "cURL"}, {"js", "JavaScript"}, {"python", "Python"}]}
+                  phx-click="set_code_lang" phx-value-lang={lang}
+                  class={["px-3 py-2 text-xs font-medium transition",
+                    if(@code_lang == lang,
+                      do: "text-cavendish border-b-2 border-cavendish",
+                      else: "text-gray-500 hover:text-gray-300")]}>
+                  {label}
+                </button>
+                <div class="flex-1"></div>
+                <button phx-click={JS.dispatch("phx:copy", detail: %{text: current_snippet(assigns)})}
+                  class="px-3 text-gray-500 hover:text-cavendish transition" title="Copy">
+                  <.icon name="hero-clipboard" class="w-3.5 h-3.5" />
+                </button>
+              </div>
+
+              <%!-- Code content --%>
+              <div class="bg-peppercorn rounded-b-lg p-4 max-h-[calc(100vh-12rem)] overflow-y-auto">
+                <%!-- Snippet --%>
+                <div :if={!@try_response}>
+                  <p class="text-[10px] text-gray-500 uppercase tracking-wider mb-2">Example Request</p>
+                  <pre class="text-xs text-green-400 font-mono whitespace-pre-wrap">{current_snippet(assigns)}</pre>
+
+                  <p class="text-[10px] text-gray-500 uppercase tracking-wider mt-6 mb-2">Example Response</p>
+                  <pre class="text-xs text-green-400 font-mono whitespace-pre-wrap">{@sample_json}</pre>
+                </div>
+
+                <%!-- Try It response (replaces example when available) --%>
+                <div :if={@try_response}>
+                  <div class="flex items-center justify-between mb-2">
+                    <p class="text-[10px] text-gray-500 uppercase tracking-wider">Response</p>
+                    <span class={["text-xs font-mono", if(@try_status == 200, do: "text-green-400", else: "text-red-400")]}>
+                      {if @try_status == 200, do: "200 OK", else: "#{@try_status}"}
+                    </span>
+                  </div>
+                  <pre class="text-xs text-green-400 font-mono whitespace-pre-wrap">{@try_response}</pre>
+
+                  <div :if={@try_mode == "list" && @list_record_ids != []} class="mt-3 border-t border-gray-700 pt-2">
+                    <p class="text-[10px] text-gray-500 mb-1">Quick detail:</p>
+                    <div class="flex flex-wrap gap-1">
+                      <button :for={rid <- @list_record_ids} phx-click="try_detail_quick" phx-value-id={rid}
+                        class="px-2 py-0.5 text-[10px] font-mono text-gray-400 hover:text-cavendish transition">/{rid}</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -277,9 +272,7 @@ defmodule FakrWeb.CollectionShowLive do
                   @activity_detail.status < 300 -> "bg-green-100 text-green-700"
                   @activity_detail.status < 400 -> "bg-yellow-100 text-yellow-700"
                   true -> "bg-red-100 text-red-700"
-                end]}>
-                {@activity_detail.status}
-              </span>
+                end]}>{@activity_detail.status}</span>
               <span class="font-mono text-sm text-peppercorn font-semibold">{@activity_detail.method}</span>
               <span class="text-xs text-gray-400">{@activity_detail.duration_ms}ms</span>
             </div>
@@ -335,37 +328,51 @@ defmodule FakrWeb.CollectionShowLive do
   # Components
   # ══════════════════════════════════════════════════════════════════════
 
+  attr :method, :string, required: true
   attr :path, :string, required: true
-  attr :base_url, :string, required: true
   attr :description, :string, required: true
+  attr :base_url, :string, required: true
 
-  defp endpoint_card(assigns) do
+  defp endpoint_row_compact(assigns) do
     assigns = assign(assigns, full_url: assigns.base_url <> assigns.path)
 
     ~H"""
-    <div class="bg-peppercorn rounded-lg p-3 space-y-1">
-      <div class="flex items-center gap-2">
-        <span class="text-xs font-bold text-cavendish bg-cavendish/20 px-1.5 py-0.5 rounded">GET</span>
-        <code class="text-sm text-green-400 font-mono flex-1 truncate">{@path}</code>
-        <button phx-click={JS.dispatch("phx:copy", detail: %{text: @full_url})} class="text-gray-500 hover:text-cavendish transition shrink-0" title="Copy"><.icon name="hero-clipboard" class="w-4 h-4" /></button>
-      </div>
-      <p class="text-[11px] text-gray-500 font-mono truncate">{@full_url}</p>
-      <p class="text-xs text-gray-400">{@description}</p>
+    <div class="flex items-center gap-3 py-2 group">
+      <span class="text-[10px] font-bold text-white bg-green-600 px-1.5 py-0.5 rounded w-10 text-center">{@method}</span>
+      <code class="text-sm font-mono text-peppercorn flex-1 truncate">{@path}</code>
+      <span class="text-xs text-gray-400 hidden sm:inline">{@description}</span>
+      <button phx-click={JS.dispatch("phx:copy", detail: %{text: @full_url})}
+        class="text-gray-300 hover:text-cypress transition opacity-0 group-hover:opacity-100 shrink-0">
+        <.icon name="hero-clipboard" class="w-3.5 h-3.5" />
+      </button>
     </div>
     """
   end
 
-  attr :label, :string, required: true
-  attr :code, :string, required: true
+  attr :field, :map, required: true
 
-  defp code_block(assigns) do
+  defp property_row(assigns) do
+    f = assigns.field
+    {_prefix, bare} = split_name(f.name)
+    type = infer_display_type(f)
+    is_nested = String.contains?(f.name, ".")
+    depth = length(String.split(f.name, ".")) - 1
+
+    assigns = assign(assigns, bare: bare, type: type, is_nested: is_nested, depth: depth)
+
     ~H"""
-    <div class="bg-peppercorn rounded-lg p-3 space-y-1">
-      <div class="flex items-center justify-between">
-        <span class="text-[11px] text-gray-400 font-medium">{@label}</span>
-        <button phx-click={JS.dispatch("phx:copy", detail: %{text: @code})} class="text-gray-500 hover:text-cavendish transition" title="Copy"><.icon name="hero-clipboard" class="w-3.5 h-3.5" /></button>
+    <div class="py-3" style={"padding-left: #{@depth * 20}px"}>
+      <div class="flex items-center gap-2 flex-wrap">
+        <span :if={@depth > 0} class="text-gray-300 text-xs">└</span>
+        <code class="text-sm font-semibold text-peppercorn">{@bare}</code>
+        <span class="text-[10px] bg-smoke text-gray-500 px-1.5 py-0.5 rounded font-mono">{@type}</span>
+        <span :if={@field.options["is_array"] == "true"} class="text-[10px] bg-blue-50 text-blue-500 px-1.5 py-0.5 rounded">array</span>
       </div>
-      <pre class="text-xs text-green-400 font-mono overflow-x-auto whitespace-pre-wrap">{@code}</pre>
+      <p class="text-xs text-gray-400 mt-0.5" style={"padding-left: #{if @depth > 0, do: 16, else: 0}px"}>
+        {@field.faker_category}.{@field.faker_function}
+        <span :for={{k, v} <- @field.options || %{}} :if={v != "" && v != nil && k not in ["is_array", "array_count", "array_count_mode", "array_min", "array_max"]}
+          class="text-gray-300"> · {k}: {v}</span>
+      </p>
     </div>
     """
   end
@@ -391,6 +398,8 @@ defmodule FakrWeb.CollectionShowLive do
         Phoenix.PubSub.subscribe(Fakr.PubSub, "api_log:#{collection_key}")
       end
 
+      sample = generate_sample_json(selected)
+
       {:ok,
        socket
        |> assign(
@@ -399,7 +408,8 @@ defmodule FakrWeb.CollectionShowLive do
          selected_resource: selected,
          username: username,
          collection_key: collection_key,
-         active_tab: "endpoints",
+         code_lang: "curl",
+         sample_json: sample,
          try_mode: "list",
          try_page: 1,
          try_limit: 10,
@@ -423,7 +433,8 @@ defmodule FakrWeb.CollectionShowLive do
   @impl true
   def handle_event("select_resource", %{"id" => id}, socket) do
     resource = Enum.find(socket.assigns.resources, &(&1.id == String.to_integer(id)))
-    {:noreply, assign(socket, selected_resource: resource, try_response: nil, try_status: 200, list_record_ids: [], try_mode: "list", try_detail_id: 1)}
+    sample = generate_sample_json(resource)
+    {:noreply, assign(socket, selected_resource: resource, sample_json: sample, try_response: nil, try_status: 200, list_record_ids: [], try_mode: "list", try_detail_id: 1)}
   end
 
   def handle_event("select_resource_mobile", params, socket) do
@@ -434,8 +445,8 @@ defmodule FakrWeb.CollectionShowLive do
     end
   end
 
-  def handle_event("set_tab", %{"tab" => tab}, socket) do
-    {:noreply, assign(socket, active_tab: tab)}
+  def handle_event("set_code_lang", %{"lang" => lang}, socket) do
+    {:noreply, assign(socket, code_lang: lang)}
   end
 
   def handle_event("set_try_mode", %{"mode" => mode}, socket) do
@@ -443,8 +454,7 @@ defmodule FakrWeb.CollectionShowLive do
   end
 
   def handle_event("update_try_params", params, socket) do
-    socket =
-      socket
+    socket = socket
       |> maybe_update(:try_page, params["page"])
       |> maybe_update(:try_limit, params["limit"], 100)
       |> maybe_update(:try_detail_id, params["detail_id"])
@@ -483,10 +493,8 @@ defmodule FakrWeb.CollectionShowLive do
   def handle_info({:new_request, entry}, socket) do
     filter = socket.assigns.activity_client_filter
     show? = filter in ["", nil] || entry.client == filter
-
     if show? do
-      updated = Enum.take([entry | socket.assigns.activity_log], 50)
-      {:noreply, assign(socket, activity_log: updated)}
+      {:noreply, assign(socket, activity_log: Enum.take([entry | socket.assigns.activity_log], 50))}
     else
       {:noreply, socket}
     end
@@ -503,22 +511,18 @@ defmodule FakrWeb.CollectionShowLive do
     plural_name = resource.name |> Inflex.pluralize() |> String.downcase()
     record_ids = Enum.map(records, fn r -> r.data["id"] end)
     response = %{"data" => %{plural_name => Enum.map(records, & &1.data), "pagination" => pagination}}
-    json = Jason.encode!(response, pretty: true)
-    {:noreply, assign(socket, try_response: json, try_status: 200, list_record_ids: record_ids)}
+    {:noreply, assign(socket, try_response: Jason.encode!(response, pretty: true), try_status: 200, list_record_ids: record_ids)}
   end
 
   defp do_try_detail(socket, id) do
     resource = socket.assigns.selected_resource
     record = Mocks.get_generated_record(resource.id, id)
-
     if record do
       singular_name = resource.name |> Inflex.singularize() |> String.downcase()
       response = %{"data" => %{singular_name => record.data}}
-      json = Jason.encode!(response, pretty: true)
-      {:noreply, assign(socket, try_response: json, try_status: 200, try_detail_id: id)}
+      {:noreply, assign(socket, try_response: Jason.encode!(response, pretty: true), try_status: 200, try_detail_id: id)}
     else
-      json = Jason.encode!(%{"error" => "Record not found"}, pretty: true)
-      {:noreply, assign(socket, try_response: json, try_status: 404, try_detail_id: id)}
+      {:noreply, assign(socket, try_response: Jason.encode!(%{"error" => "Not found"}, pretty: true), try_status: 404, try_detail_id: id)}
     end
   end
 
@@ -551,16 +555,39 @@ defmodule FakrWeb.CollectionShowLive do
     "#{assigns.base_url}/@#{assigns.username}/#{assigns.collection.slug}/api/#{assigns.selected_resource.slug}"
   end
 
+  defp current_snippet(assigns) do
+    case assigns.code_lang do
+      "curl" -> snippet_curl(assigns)
+      "js" -> snippet_js(assigns)
+      "python" -> snippet_python(assigns)
+      _ -> snippet_curl(assigns)
+    end
+  end
+
   defp snippet_curl(assigns), do: "curl \"#{api_base_url(assigns)}?page=1&limit=10\""
 
-  defp snippet_fetch(assigns) do
+  defp snippet_js(assigns) do
     url = api_base_url(assigns)
     "const res = await fetch(\"#{url}?page=1&limit=10\");\nconst data = await res.json();\nconsole.log(data);"
   end
 
   defp snippet_python(assigns) do
     url = api_base_url(assigns)
-    "import requests\n\nres = requests.get(\"#{url}\", params={\"page\": 1, \"limit\": 10})\nprint(res.json())"
+    "import requests\n\nres = requests.get(\"#{url}\",\n  params={\"page\": 1, \"limit\": 10})\nprint(res.json())"
+  end
+
+  defp generate_sample_json(nil), do: "{}"
+  defp generate_sample_json(resource) do
+    fields = Enum.reject(resource.fields, &String.starts_with?(&1.name, "__group_meta."))
+    if fields == [] do
+      "{}"
+    else
+      field_structs = Enum.map(fields, fn f ->
+        %Fakr.Mocks.ResourceField{name: f.name, faker_category: f.faker_category, faker_function: f.faker_function, options: f.options || %{}}
+      end)
+      sample = Mocks.generate_preview(field_structs)
+      Jason.encode!(sample, pretty: true)
+    end
   end
 
   defp query_params_ref do
@@ -568,7 +595,7 @@ defmodule FakrWeb.CollectionShowLive do
       {"page", "Page number (default: 1)"},
       {"limit", "Items per page (default: 10, max: 100)"},
       {"sort", "Sort by field name"},
-      {"order", "asc or desc (default: asc)"},
+      {"order", "asc or desc"},
       {"column=value", "Exact match filter"},
       {"search_column", "Field to search"},
       {"search_term", "Search keyword (case-insensitive)"},
@@ -576,6 +603,36 @@ defmodule FakrWeb.CollectionShowLive do
       {"status", "Simulate error (e.g. 500, 401)"},
       {"_client", "App identifier for activity log"}
     ]
+  end
+
+  defp visible_fields(fields) do
+    Enum.reject(fields, &String.starts_with?(&1.name, "__group_meta."))
+  end
+
+  defp split_name(name) do
+    case String.split(name, ".", parts: 2) do
+      [prefix, bare] -> {prefix, bare}
+      [bare] -> {"", bare}
+    end
+  end
+
+  defp infer_display_type(field) do
+    case {field.faker_category, field.faker_function} do
+      {"Custom", "integer"} -> "integer"
+      {"Custom", "float"} -> "number"
+      {"Custom", "price"} -> "string"
+      {"Custom", "boolean"} -> "boolean"
+      {"Custom", "date_range"} -> "date"
+      {"UUID", _} -> "uuid"
+      {"Custom", "nanoid"} -> "string"
+      {"Custom", "ulid"} -> "string"
+      {"Date", _} -> "date"
+      {"DateTime", _} -> "datetime"
+      {"Commerce", "price"} -> "number"
+      {"Address", "latitude"} -> "number"
+      {"Address", "longitude"} -> "number"
+      _ -> "string"
+    end
   end
 
   defp format_time(iso_string) when is_binary(iso_string) do
