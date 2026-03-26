@@ -9,62 +9,70 @@ defmodule FakrWeb.UserLive.Settings do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} current_scope={@current_scope}>
-      <div class="text-center">
-        <.header>
-          Account Settings
-          <:subtitle>Manage your account email address and password settings</:subtitle>
-        </.header>
+      <div class="max-w-lg mx-auto">
+        <h1 class="text-2xl font-bold text-navy mb-1">Account Settings</h1>
+        <p class="text-sm text-navy/40 mb-8">Manage your email and password</p>
+
+        <%!-- Profile info --%>
+        <div class="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="w-14 h-14 rounded-full bg-indigo/10 flex items-center justify-center text-xl font-bold text-indigo uppercase">
+              {String.first(@current_scope.user.username)}
+            </div>
+            <div>
+              <p class="font-semibold text-navy">{@current_scope.user.username}</p>
+              <p class="text-sm text-navy/40">{@current_email}</p>
+            </div>
+          </div>
+
+          <h3 class="text-xs font-semibold text-navy/40 uppercase tracking-widest mb-3">Change Email</h3>
+          <.form for={@email_form} id="email_form" phx-submit="update_email" phx-change="validate_email">
+            <.input
+              field={@email_form[:email]}
+              type="email"
+              label="New email address"
+              autocomplete="username"
+              spellcheck="false"
+              required
+            />
+            <.button variant="primary" phx-disable-with="Changing..." class="mt-2">Change Email</.button>
+          </.form>
+        </div>
+
+        <%!-- Password --%>
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+          <h3 class="text-xs font-semibold text-navy/40 uppercase tracking-widest mb-3">Change Password</h3>
+          <.form
+            for={@password_form}
+            id="password_form"
+            action={~p"/users/update-password"}
+            method="post"
+            phx-change="validate_password"
+            phx-submit="update_password"
+            phx-trigger-action={@trigger_submit}
+          >
+            <input name={@password_form[:email].name} type="hidden" id="hidden_user_email" value={@current_email} />
+            <.input
+              field={@password_form[:password]}
+              type="password"
+              label="New password"
+              autocomplete="new-password"
+              spellcheck="false"
+              required
+            />
+            <.input
+              field={@password_form[:password_confirmation]}
+              type="password"
+              label="Confirm new password"
+              autocomplete="new-password"
+              spellcheck="false"
+            />
+            <.button variant="primary" phx-disable-with="Saving..." class="mt-2">
+              Save Password
+            </.button>
+          </.form>
+        </div>
       </div>
-
-      <.form for={@email_form} id="email_form" phx-submit="update_email" phx-change="validate_email">
-        <.input
-          field={@email_form[:email]}
-          type="email"
-          label="Email"
-          autocomplete="username"
-          spellcheck="false"
-          required
-        />
-        <.button variant="primary" phx-disable-with="Changing...">Change Email</.button>
-      </.form>
-
-      <div class="divider" />
-
-      <.form
-        for={@password_form}
-        id="password_form"
-        action={~p"/users/update-password"}
-        method="post"
-        phx-change="validate_password"
-        phx-submit="update_password"
-        phx-trigger-action={@trigger_submit}
-      >
-        <input
-          name={@password_form[:email].name}
-          type="hidden"
-          id="hidden_user_email"
-          spellcheck="false"
-          value={@current_email}
-        />
-        <.input
-          field={@password_form[:password]}
-          type="password"
-          label="New password"
-          autocomplete="new-password"
-          spellcheck="false"
-          required
-        />
-        <.input
-          field={@password_form[:password_confirmation]}
-          type="password"
-          label="Confirm new password"
-          autocomplete="new-password"
-          spellcheck="false"
-        />
-        <.button variant="primary" phx-disable-with="Saving...">
-          Save Password
-        </.button>
-      </.form>
     </Layouts.app>
     """
   end

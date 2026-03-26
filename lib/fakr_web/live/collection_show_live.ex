@@ -60,6 +60,11 @@ defmodule FakrWeb.CollectionShowLive do
               <div class="mb-8">
                 <h2 class="text-xl font-bold text-navy">{@selected_resource.name}</h2>
                 <p class="text-xs text-navy/40 mt-1">{@selected_resource.total_records} records</p>
+                <div :if={@selected_resource.published && @selected_resource.published_revision != @selected_resource.revision}
+                  class="mt-3 flex items-center gap-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-700">
+                  <.icon name="hero-exclamation-triangle" class="w-4 h-4 shrink-0" />
+                  <span>Schema has been modified since last publish. Example responses reflect current schema, but <strong>Try It</strong> returns published data which may differ.</span>
+                </div>
               </div>
 
               <%!-- ═══ Endpoint: List ═══ --%>
@@ -192,7 +197,10 @@ defmodule FakrWeb.CollectionShowLive do
                   <span :if={@try_response} class={["text-xs font-mono", if(@try_status == 200, do: "text-teal", else: "text-red-400")]}>
                     {if @try_status == 200, do: "200 OK", else: "#{@try_status}"}
                   </span>
-                  <span :if={!@try_response} class="text-[10px] text-white/20">example</span>
+                  <span :if={!@try_response} class="text-[10px] text-white/20">
+                    example
+                    <span :if={@selected_resource.published && @selected_resource.published_revision != @selected_resource.revision} class="text-amber-400 ml-1" title="Schema changed since publish">*</span>
+                  </span>
                 </div>
                 <div class="p-4 max-h-[40vh] overflow-y-auto">
                   <pre class="text-xs text-mint-light font-mono whitespace-pre-wrap">{if @try_response, do: @try_response, else: if(@try_mode == "list", do: @sample_list_json, else: @sample_detail_json)}</pre>
