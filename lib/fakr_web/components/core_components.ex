@@ -56,23 +56,22 @@ defmodule FakrWeb.CoreComponents do
       id={@id}
       phx-click={JS.push("lv:clear-flash", value: %{key: @kind}) |> hide("##{@id}")}
       role="alert"
-      class="toast toast-top toast-end z-50"
+      class="fixed top-16 right-4 z-50"
       {@rest}
     >
       <div class={[
-        "alert w-80 sm:w-96 max-w-80 sm:max-w-96 text-wrap",
-        @kind == :info && "alert-info",
-        @kind == :error && "alert-error"
+        "flex items-center gap-3 w-80 sm:w-96 px-4 py-3 rounded-xl shadow-lg border text-sm",
+        @kind == :info && "bg-indigo/10 border-indigo/20 text-navy",
+        @kind == :error && "bg-red-50 border-red-200 text-red-800"
       ]}>
-        <.icon :if={@kind == :info} name="hero-information-circle" class="size-5 shrink-0" />
-        <.icon :if={@kind == :error} name="hero-exclamation-circle" class="size-5 shrink-0" />
-        <div>
+        <.icon :if={@kind == :info} name="hero-check-circle" class="size-5 shrink-0 text-indigo" />
+        <.icon :if={@kind == :error} name="hero-exclamation-circle" class="size-5 shrink-0 text-red-500" />
+        <div class="flex-1">
           <p :if={@title} class="font-semibold">{@title}</p>
           <p>{msg}</p>
         </div>
-        <div class="flex-1" />
-        <button type="button" class="group self-start cursor-pointer" aria-label={gettext("close")}>
-          <.icon name="hero-x-mark" class="size-5 opacity-40 group-hover:opacity-70" />
+        <button type="button" class="group shrink-0 cursor-pointer" aria-label={gettext("close")}>
+          <.icon name="hero-x-mark" class="size-4 text-navy/30 group-hover:text-navy/60" />
         </button>
       </div>
     </div>
@@ -94,11 +93,14 @@ defmodule FakrWeb.CoreComponents do
   slot :inner_block, required: true
 
   def button(%{rest: rest} = assigns) do
-    variants = %{"primary" => "btn-primary", nil => "btn-primary btn-soft"}
+    variants = %{
+      "primary" => "px-4 py-2 bg-indigo text-white text-sm rounded-lg hover:bg-violet transition font-medium disabled:opacity-50",
+      nil => "px-4 py-2 bg-gray-100 text-navy text-sm rounded-lg hover:bg-gray-200 transition font-medium disabled:opacity-50"
+    }
 
     assigns =
       assign_new(assigns, :class, fn ->
-        ["btn", Map.fetch!(variants, assigns[:variant])]
+        [Map.fetch!(variants, assigns[:variant])]
       end)
 
     if rest[:href] || rest[:navigate] || rest[:patch] do
@@ -235,7 +237,7 @@ defmodule FakrWeb.CoreComponents do
     ~H"""
     <div class="fieldset mb-2">
       <label for={@id}>
-        <span :if={@label} class="label mb-1">{@label}</span>
+        <span :if={@label} class="label mb-1 text-navy/70 text-sm font-medium">{@label}</span>
         <select
           id={@id}
           name={@name}
@@ -256,7 +258,7 @@ defmodule FakrWeb.CoreComponents do
     ~H"""
     <div class="fieldset mb-2">
       <label for={@id}>
-        <span :if={@label} class="label mb-1">{@label}</span>
+        <span :if={@label} class="label mb-1 text-navy/70 text-sm font-medium">{@label}</span>
         <textarea
           id={@id}
           name={@name}
@@ -277,7 +279,7 @@ defmodule FakrWeb.CoreComponents do
     ~H"""
     <div class="fieldset mb-2">
       <label for={@id}>
-        <span :if={@label} class="label mb-1">{@label}</span>
+        <span :if={@label} class="label mb-1 text-navy/70 text-sm font-medium">{@label}</span>
         <input
           type={@type}
           name={@name}
@@ -316,10 +318,10 @@ defmodule FakrWeb.CoreComponents do
     ~H"""
     <header class={[@actions != [] && "flex items-center justify-between gap-6", "pb-4"]}>
       <div>
-        <h1 class="text-lg font-semibold leading-8">
+        <h1 class="text-lg font-semibold leading-8 text-navy">
           {render_slot(@inner_block)}
         </h1>
-        <p :if={@subtitle != []} class="text-sm text-base-content/70">
+        <p :if={@subtitle != []} class="text-sm text-navy/50">
           {render_slot(@subtitle)}
         </p>
       </div>

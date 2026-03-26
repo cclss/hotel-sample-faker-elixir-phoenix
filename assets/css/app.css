@@ -146,4 +146,11 @@
   --color-smoke-dark: #D1D5DB;
 }
 
+/* Custom form styles */
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--color-indigo);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-indigo) 20%, transparent);
+}
+
 /* This file is for your main application CSS */

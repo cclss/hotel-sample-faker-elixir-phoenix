@@ -52,7 +52,7 @@ defmodule FakrWeb.UserLive.Login do
             required
             phx-mounted={JS.focus()}
           />
-          <.button class="btn btn-primary w-full">
+          <.button variant="primary" class="w-full">
             Log in with email <span aria-hidden="true">&rarr;</span>
           </.button>
         </.form>
@@ -83,7 +83,7 @@ defmodule FakrWeb.UserLive.Login do
             autocomplete="current-password"
             spellcheck="false"
           />
-          <.button class="btn btn-primary w-full" name={@form[:remember_me].name} value="true">
+          <.button variant="primary" class="w-full" name={@form[:remember_me].name} value="true">
             Log in with password <span aria-hidden="true">&rarr;</span>
           </.button>
         </.form>

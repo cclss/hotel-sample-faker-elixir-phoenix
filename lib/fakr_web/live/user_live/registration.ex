@@ -59,7 +59,7 @@ defmodule FakrWeb.UserLive.Registration do
             required
           />
 
-          <.button phx-disable-with="Creating account..." class="btn btn-primary w-full">
+          <.button phx-disable-with="Creating account..." variant="primary" class="w-full">
             Create an account
           </.button>
         </.form>
