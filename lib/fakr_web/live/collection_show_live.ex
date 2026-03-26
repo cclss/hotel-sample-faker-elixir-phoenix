@@ -125,16 +125,24 @@ defmodule FakrWeb.CollectionShowLive do
 
           <%!-- ═══ Right Code Panel (sticky) ═══ --%>
           <div :if={@selected_resource} class="w-[400px] shrink-0 hidden xl:block">
-            <div class="sticky top-20 space-y-4">
+            <div class="sticky top-20 space-y-0">
+              <%!-- List / Detail toggle (top-level) --%>
+              <div class="flex items-center gap-1 mb-3">
+                <button :for={{mode, label} <- [{"list", "List"}, {"detail", "Detail"}]}
+                  phx-click="set_try_mode" phx-value-mode={mode}
+                  class={["px-3 py-1.5 text-xs rounded-lg font-medium transition",
+                    if(@try_mode == mode, do: "bg-indigo text-white", else: "bg-gray-100 text-navy/50 hover:bg-gray-200")]}>
+                  {label}
+                </button>
+              </div>
+
               <%!-- Request --%>
-              <div class="bg-code-bg rounded-xl overflow-hidden">
+              <div class="bg-code-bg rounded-t-xl overflow-hidden">
                 <div class="flex items-center border-b border-white/10">
-                  <button :for={{lang, label} <- [{"tryit", "Try It"}, {"curl", "cURL"}, {"js", "JavaScript"}, {"python", "Python"}]}
+                  <button :for={{lang, label} <- [{"tryit", "Try It"}, {"curl", "cURL"}, {"js", "JS"}, {"python", "Py"}]}
                     phx-click="set_code_lang" phx-value-lang={lang}
                     class={["px-3 py-2.5 text-[11px] font-medium transition",
-                      if(@code_lang == lang,
-                        do: "text-mint-light border-b-2 border-mint-light",
-                        else: "text-white/40 hover:text-white/70")]}>
+                      if(@code_lang == lang, do: "text-mint-light border-b-2 border-mint-light", else: "text-white/40 hover:text-white/70")]}>
                     {label}
                   </button>
                   <div class="flex-1"></div>
@@ -142,23 +150,15 @@ defmodule FakrWeb.CollectionShowLive do
                     class="px-3 text-white/30 hover:text-mint-light transition"><.icon name="hero-clipboard" class="w-3.5 h-3.5" /></button>
                 </div>
                 <div class="p-4">
-                  <%!-- Try It --%>
+                  <%!-- Try It controls --%>
                   <div :if={@code_lang == "tryit"}>
-                    <div class="flex items-center gap-2 mb-3">
-                      <button :for={{mode, label} <- [{"list", "List"}, {"detail", "Detail"}]}
-                        phx-click="set_try_mode" phx-value-mode={mode}
-                        class={["px-2.5 py-1 text-[11px] rounded font-medium transition",
-                          if(@try_mode == mode, do: "bg-indigo text-white", else: "bg-white/10 text-white/50 hover:text-white/80")]}>
-                        {label}
-                      </button>
-                    </div>
                     <div class="bg-white/5 rounded-lg px-3 py-2 mb-3 font-mono text-xs text-mint-light truncate">
                       <span class="text-sky font-bold mr-1">GET</span>
                       <span class="text-white/60">
                         /@{@username}/{@collection.slug}/api/{@selected_resource.slug}<%= if @try_mode == "list" do %>?page={@try_page}&limit={@try_limit}<% else %>/{@try_detail_id}<% end %>
                       </span>
                     </div>
-                    <div class="flex items-end gap-2 mb-2">
+                    <div class="flex items-end gap-2">
                       <%= if @try_mode == "list" do %>
                         <div>
                           <label class="block text-[10px] text-white/30 mb-0.5">Page</label>
@@ -174,9 +174,7 @@ defmodule FakrWeb.CollectionShowLive do
                           <input type="number" value={@try_detail_id} phx-change="update_try_params" name="detail_id" min="1" class="bg-white/10 text-white text-xs rounded px-2 py-1 w-16 border-0 focus:ring-1 focus:ring-indigo" />
                         </div>
                       <% end %>
-                      <button phx-click="try_api" class="px-4 py-1 bg-indigo text-white text-xs rounded hover:bg-violet transition font-medium">
-                        Send
-                      </button>
+                      <button phx-click="try_api" class="px-4 py-1 bg-indigo text-white text-xs rounded hover:bg-violet transition font-medium">Send</button>
                     </div>
                   </div>
                   <%!-- Code snippets --%>
@@ -188,17 +186,16 @@ defmodule FakrWeb.CollectionShowLive do
               </div>
 
               <%!-- Response --%>
-              <div class="bg-code-bg rounded-xl overflow-hidden">
-                <div class="flex items-center justify-between px-4 py-2.5 border-b border-white/10">
+              <div class="bg-code-bg rounded-b-xl overflow-hidden border-t border-white/5">
+                <div class="flex items-center justify-between px-4 py-2 border-b border-white/10">
                   <p class="text-[10px] text-white/30 uppercase tracking-wider">Response</p>
                   <span :if={@try_response} class={["text-xs font-mono", if(@try_status == 200, do: "text-teal", else: "text-red-400")]}>
                     {if @try_status == 200, do: "200 OK", else: "#{@try_status}"}
                   </span>
                   <span :if={!@try_response} class="text-[10px] text-white/20">example</span>
                 </div>
-                <div class="p-4 max-h-[45vh] overflow-y-auto">
+                <div class="p-4 max-h-[40vh] overflow-y-auto">
                   <pre class="text-xs text-mint-light font-mono whitespace-pre-wrap">{if @try_response, do: @try_response, else: @sample_json}</pre>
-
                   <div :if={@try_response && @try_mode == "list" && @list_record_ids != []} class="mt-3 border-t border-white/10 pt-2">
                     <p class="text-[10px] text-white/30 mb-1">Quick detail:</p>
                     <div class="flex flex-wrap gap-1">

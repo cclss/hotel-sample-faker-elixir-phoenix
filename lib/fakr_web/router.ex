@@ -65,7 +65,6 @@ defmodule FakrWeb.Router do
       live "/users/settings/confirm-email/:token", UserLive.Settings, :confirm_email
 
       live "/dashboard", DashboardLive, :index
-      live "/collections/new", CollectionLive.Form, :new
       live "/collections/:id", CollectionLive.Show, :show
       live "/collections/:collection_id/resources/:id", ResourceLive.Show, :show
     end

@@ -164,7 +164,7 @@ defmodule FakrWeb.ResourceLive.Show do
 
       <%!-- ═══ Group Name Modal ═══ --%>
       <div :if={@group_modal} class="fixed inset-0 z-50 flex items-center justify-center" phx-window-keydown="close_group_modal" phx-key="Escape">
-        <div class="fixed inset-0 bg-black/50" phx-click="close_group_modal"></div>
+        <div class="fixed inset-0 bg-black/40" phx-click="close_group_modal"></div>
         <div class="relative bg-white rounded-xl shadow-xl p-6 w-full max-w-sm mx-4 z-10">
           <h2 class="text-lg font-semibold text-navy mb-4">New Group</h2>
           <form phx-submit="create_group">
@@ -174,8 +174,8 @@ defmodule FakrWeb.ResourceLive.Show do
               <p class="text-xs text-gray-400 mt-1">Fields inside this group will be nested as a JSON object.</p>
             </div>
             <div class="mt-4 flex items-center gap-3">
-              <button type="submit" class="btn btn-primary">Create & Add Field</button>
-              <button type="button" phx-click="close_group_modal" class="text-sm text-gray-500 hover:underline">Cancel</button>
+              <button type="submit" class="px-4 py-2 bg-indigo text-white text-sm rounded-lg hover:bg-violet transition font-medium">Create & Add Field</button>
+              <button type="button" phx-click="close_group_modal" class="text-sm text-navy/40 hover:text-navy/60">Cancel</button>
             </div>
           </form>
         </div>
@@ -183,7 +183,7 @@ defmodule FakrWeb.ResourceLive.Show do
 
       <%!-- ═══ Group Settings Modal ═══ --%>
       <div :if={@group_edit_modal} class="fixed inset-0 z-50 flex items-center justify-center" phx-window-keydown="close_group_edit" phx-key="Escape">
-        <div class="fixed inset-0 bg-black/50" phx-click="close_group_edit"></div>
+        <div class="fixed inset-0 bg-black/40" phx-click="close_group_edit"></div>
         <div class="relative bg-white rounded-xl shadow-xl p-6 w-full max-w-sm mx-4 z-10">
           <h2 class="text-lg font-semibold text-navy mb-1">Group: {@ge_group_name}</h2>
           <p class="text-xs text-gray-400 mb-4">Configure how this group appears in the JSON output.</p>
@@ -226,8 +226,8 @@ defmodule FakrWeb.ResourceLive.Show do
               </div>
             </div>
             <div class="mt-4 flex items-center gap-3">
-              <button type="submit" class="btn btn-primary btn-sm">Save</button>
-              <button type="button" phx-click="close_group_edit" class="text-sm text-gray-500 hover:underline">Cancel</button>
+              <button type="submit" class="px-3 py-1.5 bg-indigo text-white text-sm rounded-lg hover:bg-violet transition font-medium">Save</button>
+              <button type="button" phx-click="close_group_edit" class="text-sm text-navy/40 hover:text-navy/60">Cancel</button>
             </div>
           </form>
         </div>
@@ -235,7 +235,7 @@ defmodule FakrWeb.ResourceLive.Show do
 
       <%!-- ═══ Edit Resource Modal ═══ --%>
       <div :if={@show_edit_resource} class="fixed inset-0 z-50 flex items-center justify-center" phx-window-keydown="close_edit_resource" phx-key="Escape">
-        <div class="fixed inset-0 bg-black/50" phx-click="close_edit_resource"></div>
+        <div class="fixed inset-0 bg-black/40" phx-click="close_edit_resource"></div>
         <div class="relative bg-white rounded-xl shadow-xl p-6 w-full max-w-md mx-4 z-10">
           <div class="flex items-center justify-between mb-4">
             <h2 class="text-lg font-semibold text-navy">Edit Resource</h2>
@@ -247,8 +247,8 @@ defmodule FakrWeb.ResourceLive.Show do
               <.input field={@resource_form[:total_records]} type="number" label="Total Records" min="1" max="1000" />
             </div>
             <div class="mt-6 flex items-center gap-3">
-              <.button type="submit" class="btn btn-primary">Save</.button>
-              <button type="button" phx-click="close_edit_resource" class="text-sm text-gray-500 hover:underline">Cancel</button>
+              <.button type="submit" class="px-4 py-2 bg-indigo text-white text-sm rounded-lg hover:bg-violet transition font-medium">Save</.button>
+              <button type="button" phx-click="close_edit_resource" class="text-sm text-navy/40 hover:text-navy/60">Cancel</button>
             </div>
           </.form>
         </div>
@@ -310,7 +310,7 @@ defmodule FakrWeb.ResourceLive.Show do
   defp field_modal(assigns) do
     ~H"""
     <div class="fixed inset-0 z-50 flex items-center justify-center" phx-window-keydown="close_field_modal" phx-key="Escape">
-      <div class="fixed inset-0 bg-black/50" phx-click="close_field_modal"></div>
+      <div class="fixed inset-0 bg-black/40" phx-click="close_field_modal"></div>
       <div class="relative bg-white rounded-xl shadow-xl p-6 w-full max-w-lg mx-4 z-10 max-h-[85vh] overflow-y-auto">
         <div class="flex items-center justify-between mb-4">
           <div>
@@ -389,10 +389,10 @@ defmodule FakrWeb.ResourceLive.Show do
           </div>
 
           <div class="mt-6 flex items-center gap-3">
-            <button type="submit" class="btn btn-primary" disabled={@fm_category == "" || @fm_function == ""}>
+            <button type="submit" class="px-4 py-2 bg-indigo text-white text-sm rounded-lg hover:bg-violet transition font-medium" disabled={@fm_category == "" || @fm_function == ""}>
               {if @mode == "add", do: "Add Field", else: "Save Changes"}
             </button>
-            <button type="button" phx-click="close_field_modal" class="text-sm text-gray-500 hover:underline">Cancel</button>
+            <button type="button" phx-click="close_field_modal" class="text-sm text-navy/40 hover:text-navy/60">Cancel</button>
           </div>
         </form>
       </div>

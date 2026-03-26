@@ -17,7 +17,7 @@ defmodule FakrWeb.UserLive.Login do
               <% else %>
                 Don't have an account? <.link
                   navigate={~p"/users/register"}
-                  class="font-semibold text-brand hover:underline"
+                  class="font-semibold text-blue hover:underline"
                   phx-no-format
                 >Sign up</.link> for an account now.
               <% end %>
