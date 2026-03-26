@@ -68,7 +68,7 @@ defmodule FakrWeb.CollectionShowLive do
               </div>
 
               <%!-- ═══ Endpoint: List ═══ --%>
-              <section id="sec-list" class="mb-12">
+              <section id="sec-list" class="mb-12 scroll-mt-24">
                 <div class="flex items-center gap-3 mb-4 pb-3 border-b border-gray-200">
                   <span class="text-[11px] font-bold text-white bg-sky px-2 py-0.5 rounded">GET</span>
                   <code class="text-sm font-mono text-navy font-semibold">/@{@username}/{@collection.slug}/api/{@selected_resource.slug}</code>
@@ -78,7 +78,7 @@ defmodule FakrWeb.CollectionShowLive do
                 </p>
 
                 <%!-- Properties --%>
-                <div id="sec-properties" class="mb-8">
+                <div id="sec-properties" class="mb-8 scroll-mt-24">
                   <h4 class="text-xs font-semibold text-deep-violet uppercase tracking-widest mb-3">Response Properties</h4>
                   <div class="divide-y divide-gray-100">
                     <div class="py-3">
@@ -94,7 +94,7 @@ defmodule FakrWeb.CollectionShowLive do
                 </div>
 
                 <%!-- Query Parameters --%>
-                <div id="sec-params" class="mb-6">
+                <div id="sec-params" class="mb-6 scroll-mt-24">
                   <h4 class="text-xs font-semibold text-deep-violet uppercase tracking-widest mb-3">Query Parameters</h4>
                   <div class="divide-y divide-gray-100">
                     <div :for={{param, desc} <- query_params_ref()} class="py-2 flex items-start gap-3">
@@ -106,7 +106,7 @@ defmodule FakrWeb.CollectionShowLive do
               </section>
 
               <%!-- ═══ Endpoint: Detail ═══ --%>
-              <section id="sec-detail" class="mb-12">
+              <section id="sec-detail" class="mb-12 scroll-mt-24">
                 <div class="flex items-center gap-3 mb-4 pb-3 border-b border-gray-200">
                   <span class="text-[11px] font-bold text-white bg-sky px-2 py-0.5 rounded">GET</span>
                   <code class="text-sm font-mono text-navy font-semibold">/@{@username}/{@collection.slug}/api/{@selected_resource.slug}/:id</code>
@@ -121,6 +121,9 @@ defmodule FakrWeb.CollectionShowLive do
                   </div>
                 </div>
               </section>
+
+              <%!-- Bottom spacer for anchor scroll --%>
+              <div class="min-h-[50vh]"></div>
             </div>
 
             <div :if={@selected_resource == nil} class="px-6 text-center py-16 text-gray-400">
