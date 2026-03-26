@@ -195,7 +195,7 @@ defmodule FakrWeb.CollectionShowLive do
                   <span :if={!@try_response} class="text-[10px] text-white/20">example</span>
                 </div>
                 <div class="p-4 max-h-[40vh] overflow-y-auto">
-                  <pre class="text-xs text-mint-light font-mono whitespace-pre-wrap">{if @try_response, do: @try_response, else: @sample_json}</pre>
+                  <pre class="text-xs text-mint-light font-mono whitespace-pre-wrap">{if @try_response, do: @try_response, else: if(@try_mode == "list", do: @sample_list_json, else: @sample_detail_json)}</pre>
                   <div :if={@try_response && @try_mode == "list" && @list_record_ids != []} class="mt-3 border-t border-white/10 pt-2">
                     <p class="text-[10px] text-white/30 mb-1">Quick detail:</p>
                     <div class="flex flex-wrap gap-1">
@@ -370,7 +370,9 @@ defmodule FakrWeb.CollectionShowLive do
        |> assign(
          collection: collection, resources: resources, selected_resource: selected,
          username: username, collection_key: collection_key,
-         code_lang: "tryit", sample_json: generate_sample_json(selected),
+         code_lang: "tryit",
+         sample_list_json: generate_sample_list_json(selected),
+         sample_detail_json: generate_sample_detail_json(selected),
          try_mode: "list", try_page: 1, try_limit: 10, try_detail_id: 1,
          try_response: nil, try_status: 200, list_record_ids: [],
          base_url: FakrWeb.Endpoint.url(),
@@ -388,7 +390,7 @@ defmodule FakrWeb.CollectionShowLive do
   @impl true
   def handle_event("select_resource", %{"id" => id}, socket) do
     resource = Enum.find(socket.assigns.resources, &(&1.id == String.to_integer(id)))
-    {:noreply, assign(socket, selected_resource: resource, sample_json: generate_sample_json(resource), try_response: nil, try_status: 200, list_record_ids: [], try_mode: "list", try_detail_id: 1)}
+    {:noreply, assign(socket, selected_resource: resource, sample_list_json: generate_sample_list_json(resource), sample_detail_json: generate_sample_detail_json(resource), try_response: nil, try_status: 200, list_record_ids: [], try_mode: "list", try_detail_id: 1)}
   end
 
   def handle_event("select_resource_mobile", params, socket) do
@@ -487,15 +489,36 @@ defmodule FakrWeb.CollectionShowLive do
     end
   end
 
-  defp generate_sample_json(nil), do: "{}"
-  defp generate_sample_json(resource) do
+  defp generate_sample_record(nil), do: %{}
+  defp generate_sample_record(resource) do
     fields = Enum.reject(resource.fields, &String.starts_with?(&1.name, "__group_meta."))
     if fields == [] do
-      "{}"
+      %{}
     else
       structs = Enum.map(fields, &%Fakr.Mocks.ResourceField{name: &1.name, faker_category: &1.faker_category, faker_function: &1.faker_function, options: &1.options || %{}})
-      Jason.encode!(Mocks.generate_preview(structs), pretty: true)
+      Mocks.generate_preview(structs)
     end
+  end
+
+  defp generate_sample_list_json(nil), do: "{}"
+  defp generate_sample_list_json(resource) do
+    plural = resource.name |> Inflex.pluralize() |> String.downcase()
+    record = generate_sample_record(resource)
+    response = %{
+      "data" => %{
+        plural => [record],
+        "pagination" => %{"page" => 1, "limit" => 10, "total" => resource.total_records, "current_page" => 1, "has_next" => true, "has_prev" => false, "last_page_no" => max(ceil(resource.total_records / 10), 1)}
+      }
+    }
+    Jason.encode!(response, pretty: true)
+  end
+
+  defp generate_sample_detail_json(nil), do: "{}"
+  defp generate_sample_detail_json(resource) do
+    singular = resource.name |> Inflex.singularize() |> String.downcase()
+    record = generate_sample_record(resource)
+    response = %{"data" => %{singular => record}}
+    Jason.encode!(response, pretty: true)
   end
 
   defp query_params_ref, do: [
